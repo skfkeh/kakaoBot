@@ -1,0 +1,393 @@
+1,모델링은 현실세계에 대해서 표현하는 것으로 이해할 수 있다. 다음 중 모델링의 특징으로 가장 부적절한 것은?,Unnamed: 2,3,1.1,애매모호함을 배제하고 누구나 이해가 가능하도록 정확하게 현상을 기술하는 정확화의 의미를 가짐
+730.0,다음의 주식별자가 나타내는 특징을 가장 잘 설명한 것은?,주식별자를 구성하는 속성 중에서 유일성을 만족하는 최소한의 속성으로 구성한다.,3,2,단일성
+730.0,다음의 주식별자가 나타내는 특징을 가장 잘 설명한 것은?,주식별자를 구성하는 속성 중에서 유일성을 만족하는 최소한의 속성으로 구성한다.,3,3,최소성
+730.0,다음의 주식별자가 나타내는 특징을 가장 잘 설명한 것은?,주식별자를 구성하는 속성 중에서 유일성을 만족하는 최소한의 속성으로 구성한다.,3,4,유일성
+732.0,관계형 데이터베이스에 대한 특징 중 가장 적절하지 않은 것은?,,1,1,데이터베이스의 부하를 분석하기 쉽다.
+732.0,관계형 데이터베이스에 대한 특징 중 가장 적절하지 않은 것은?,,1,2,기존의 작성된 스키마를 수정하기 어렵다.
+732.0,관계형 데이터베이스에 대한 특징 중 가장 적절하지 않은 것은?,,1,3,"데이터를 분류, 정렬, 탐색하는 속도가 빠르다."
+732.0,관계형 데이터베이스에 대한 특징 중 가장 적절하지 않은 것은?,,1,4,데이터의 무결성을 보장할 수 있다.
+734.0,다음 중 오류가 발생하는 문장으로 가장 적절한 것은?,,1,1,"SELECT T.COL2, SUM(T.COL1), SUM(T.COL3) FROM TAB1 T GROUP BY T.COL2 ORDER BY T.COL3;"
+734.0,다음 중 오류가 발생하는 문장으로 가장 적절한 것은?,,1,2,"SELECT T.COL2, SUM(T.COL1) AS SUM_VALUE FROM TAB1 T GROUP BY T.COL2 ORDER BY SUM_VALUE, T.COL2;"
+734.0,다음 중 오류가 발생하는 문장으로 가장 적절한 것은?,,1,3,"SELECT T.COL2, SUM(T.COL1) FROM TAB1 T WHERE COL1 >= 100 GROUP BY COL2;"
+734.0,다음 중 오류가 발생하는 문장으로 가장 적절한 것은?,,1,4,"SELECT COL1, T.COL2, T.COL3 FROM TAB1 T WHERE COL1 >= 100;"
+749.0,아래 SQL 중 결과가 다른 하나는?,,1,1,"SELECT CODE, NAME, (SELECT PRICE FROM PRODUCT WHERE P1.CODE = P2.CODE) FROM PRODUCT P1;"
+749.0,아래 SQL 중 결과가 다른 하나는?,,1,2,"SELECT CODE, NAME, PRICE FROM PRODUCT P1 WHERE PRICE = (SELECT MAX(PRICE) FROM PRODUCT P2 WHERE P1.CODE = P2.CODE);"
+749.0,아래 SQL 중 결과가 다른 하나는?,,1,3,"SELECT CODE, NAME, PRICE FROM PRODUCT WHERE (CODE, PRICE) IN (SELECT CODE, MAX(PRICE) FROM PRODUCT GROUP BY CODE);"
+749.0,아래 SQL 중 결과가 다른 하나는?,,1,4,"SELECT P.CODE, P.NAME, P.PRICE FROM PRODUCT P, (SELECT CODE, MAX(PRICE) AS MAX_PRICE FROM PRODUCT GROUP BY CODE) I WHERE P.CODE = I.CODE AND P.PRICE = I.MAX_PRICE;"
+762.0,PIVOT과 UNPIVOT에 대한 설명으로 가장 적절한 것은?,,1,1,"PIVOT 시 FOR 앞에는 반드시 집계함수(SUM, AVG 등)의 형태여야 한다."
+762.0,PIVOT과 UNPIVOT에 대한 설명으로 가장 적절한 것은?,,1,2,UNPIVOT시 쌓을 컬럼을 지정할 수 없다.
+762.0,PIVOT과 UNPIVOT에 대한 설명으로 가장 적절한 것은?,,1,3,UNPIVOT은 LONG 데이터를 WIDE 데이터로 변환하는 기법이다.
+762.0,PIVOT과 UNPIVOT에 대한 설명으로 가장 적절한 것은?,,1,4,PIVOT은 교차표 형태의 데이터를 TIDY 데이터로 변경하는 문법이다.
+769.0,외래키에 대한 설명으로 가장 적절하지 않은 것은?,,2,1,"자식 테이블은 UPDATE, INSERT 시 제약을 받는다."
+769.0,외래키에 대한 설명으로 가장 적절하지 않은 것은?,,2,2,ON DELETE CASCADE 옵션으로 외래키 생성 시 부모 데이터만 삭제되고 자식데이터는 그대로 남는다.
+769.0,외래키에 대한 설명으로 가장 적절하지 않은 것은?,,2,3,외래키 생성 후 부모 테이블은 자식 데이터가 있을 경우 삭제 불가하다.
+769.0,외래키에 대한 설명으로 가장 적절하지 않은 것은?,,2,4,외래키 생성 시 참조 테이블의 참조키에 반드시 기본키 또는 고유키가 생성되어 있어야 한다.
+770.0,뷰에 대한 설명 중 가장 적절하지 않은 것은?,,2,1,기본 테이블이 삭제되면 그 테이블을 참조하여 만든 뷰 역시 삭제된다.
+770.0,뷰에 대한 설명 중 가장 적절하지 않은 것은?,,2,2,뷰를 참조하는 또 다른 뷰는 생성 불가하다.
+770.0,뷰에 대한 설명 중 가장 적절하지 않은 것은?,,2,3,원본 테이블이 노출되지 않으므로 데이터를 안전하게 보호할 수 있다.
+770.0,뷰에 대한 설명 중 가장 적절하지 않은 것은?,,2,4,뷰는 가상의 테이블이기에 물리적으로 구현되어 있지 않으며 저장공간을 차지하지 않는다.
+796.0,다음 ANSI 문법을 오라클 문법으로 바꾼 것으로 가장 적절한 것은? ,"SELECT * 
+  FROM TAB1 JOIN TAB2 
+     ON TAB1.COL1 = TAB2.COL1 
+        LEFT OUTER JOIN TAB3 
+     ON TAB1.COL2 = TAB3.COL2; ",2,1,"SELECT * FROM TAB1, TAB2, TAB3 WHERE TAB1.COL1 = TAB2.COL1(+) AND TAB1.COL2 = TAB3.COL2(+);"
+796.0,다음 ANSI 문법을 오라클 문법으로 바꾼 것으로 가장 적절한 것은? ,"SELECT * 
+  FROM TAB1 JOIN TAB2 
+     ON TAB1.COL1 = TAB2.COL1 
+        LEFT OUTER JOIN TAB3 
+     ON TAB1.COL2 = TAB3.COL2; ",2,2,"SELECT * FROM TAB1, TAB2, TAB3 WHERE TAB1.COL1 = TAB2.COL1 AND TAB1.COL2 = TAB3.COL2(+);"
+796.0,다음 ANSI 문법을 오라클 문법으로 바꾼 것으로 가장 적절한 것은? ,"SELECT * 
+  FROM TAB1 JOIN TAB2 
+     ON TAB1.COL1 = TAB2.COL1 
+        LEFT OUTER JOIN TAB3 
+     ON TAB1.COL2 = TAB3.COL2; ",2,3,"SELECT * FROM TAB1, TAB2, TAB3 WHERE TAB1.COL1 = TAB2.COL1(+) AND TAB1.COL2 = TAB3.COL2;"
+796.0,다음 ANSI 문법을 오라클 문법으로 바꾼 것으로 가장 적절한 것은? ,"SELECT * 
+  FROM TAB1 JOIN TAB2 
+     ON TAB1.COL1 = TAB2.COL1 
+        LEFT OUTER JOIN TAB3 
+     ON TAB1.COL2 = TAB3.COL2; ",2,4,"SELECT * FROM TAB1, TAB2, TAB3 WHERE TAB1.COL1 = TAB2.COL1 AND TAB1.COL2 = TAB3.COL2;"
+243.0,테이블 3개를 조인하려면 최소 몇 개의 조건절이 필요한가?,,3,1,4
+243.0,테이블 3개를 조인하려면 최소 몇 개의 조건절이 필요한가?,,3,2,3
+243.0,테이블 3개를 조인하려면 최소 몇 개의 조건절이 필요한가?,,3,3,2
+243.0,테이블 3개를 조인하려면 최소 몇 개의 조건절이 필요한가?,,3,4,1
+260.0,다음의 SQL문은 파티션별 윈도우의 전체건수에서 현재 행보다 작거나 같은 건수에 대해서 누적백분율을 구하는 SQL문이다. (ㄱ)에 올바른 윈도우 함수는?,"SELECT DEPTNO, ENAME, SAL, ( ㄱ ) OVER(PARTITION BY DEPTNO ORDER BY SAL DESC) as PCT
+FROM EMP;",1,1,CUME_DIST()
+260.0,다음의 SQL문은 파티션별 윈도우의 전체건수에서 현재 행보다 작거나 같은 건수에 대해서 누적백분율을 구하는 SQL문이다. (ㄱ)에 올바른 윈도우 함수는?,"SELECT DEPTNO, ENAME, SAL, ( ㄱ ) OVER(PARTITION BY DEPTNO ORDER BY SAL DESC) as PCT
+FROM EMP;",1,2,LAG()
+260.0,다음의 SQL문은 파티션별 윈도우의 전체건수에서 현재 행보다 작거나 같은 건수에 대해서 누적백분율을 구하는 SQL문이다. (ㄱ)에 올바른 윈도우 함수는?,"SELECT DEPTNO, ENAME, SAL, ( ㄱ ) OVER(PARTITION BY DEPTNO ORDER BY SAL DESC) as PCT
+FROM EMP;",1,3,LEAD()
+260.0,다음의 SQL문은 파티션별 윈도우의 전체건수에서 현재 행보다 작거나 같은 건수에 대해서 누적백분율을 구하는 SQL문이다. (ㄱ)에 올바른 윈도우 함수는?,"SELECT DEPTNO, ENAME, SAL, ( ㄱ ) OVER(PARTITION BY DEPTNO ORDER BY SAL DESC) as PCT
+FROM EMP;",1,4,NTILE()
+261.0,윈도우 함수 중에서 윈도우에서 제일 먼저 나오는 것을 0으로 하고 제일 늦게 나오는 것을 1로 해서 행 순서별 백분율을 구하는 것은?,,2,1,CUME_DIST
+261.0,윈도우 함수 중에서 윈도우에서 제일 먼저 나오는 것을 0으로 하고 제일 늦게 나오는 것을 1로 해서 행 순서별 백분율을 구하는 것은?,,2,2,PERCENT_RANK
+261.0,윈도우 함수 중에서 윈도우에서 제일 먼저 나오는 것을 0으로 하고 제일 늦게 나오는 것을 1로 해서 행 순서별 백분율을 구하는 것은?,,2,3,LAST_VALUE
+261.0,윈도우 함수 중에서 윈도우에서 제일 먼저 나오는 것을 0으로 하고 제일 늦게 나오는 것을 1로 해서 행 순서별 백분율을 구하는 것은?,,2,4,FIRST_VALUE
+264.0,다음 설명 중 올바르지 않은 것은?,,4,1,Oracle에서 인덱스 구성 칼럼이 모두 null인 레코드는 인덱스에 저장하지 않는다.
+264.0,다음 설명 중 올바르지 않은 것은?,,4,2,SQL Server는 인덱스 구성 칼럼이 모두 null인 레코드도 인덱스에 저장한다.
+264.0,다음 설명 중 올바르지 않은 것은?,,4,3,Oracle에서 인덱스 구성 칼럼 중 하나라도 null이 아닌 레코드는 인덱스에 저장한다.
+264.0,다음 설명 중 올바르지 않은 것은?,,4,4,SQL Server는 null 값을 인덱스 맨 뒤에 저장한다.
+284.0,"사용자 A가 어떤 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 B에게 허가하고, 사용자 B가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 C에게 허가하고, 사용자 C가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 D에게 허가했을 때, 사용자 A가 사용자 B로부터 SELECT 권한을 취소하면 사용자 C와 D의 권한은 어떻게 되는가?",,1,1,C와 D의 권한이 취소된다.
+284.0,"사용자 A가 어떤 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 B에게 허가하고, 사용자 B가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 C에게 허가하고, 사용자 C가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 D에게 허가했을 때, 사용자 A가 사용자 B로부터 SELECT 권한을 취소하면 사용자 C와 D의 권한은 어떻게 되는가?",,1,2,C와 D의 권한이 유지된다.
+284.0,"사용자 A가 어떤 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 B에게 허가하고, 사용자 B가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 C에게 허가하고, 사용자 C가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 D에게 허가했을 때, 사용자 A가 사용자 B로부터 SELECT 권한을 취소하면 사용자 C와 D의 권한은 어떻게 되는가?",,1,3,"C의 권한은 취소되고, D의 권한은 유지된다."
+284.0,"사용자 A가 어떤 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 B에게 허가하고, 사용자 B가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 C에게 허가하고, 사용자 C가 그 릴레이션에 대한 SELECT 권한을 WITH GRANT OPTION과 함께 사용자 D에게 허가했을 때, 사용자 A가 사용자 B로부터 SELECT 권한을 취소하면 사용자 C와 D의 권한은 어떻게 되는가?",,1,4,"C의 권한은 유지되고, D의 권한은 취소된다."
+813.0,제1정규형(1NF)의 조건은?,,2,1,이행적 종속 제거
+813.0,제1정규형(1NF)의 조건은?,,2,2,반복 속성 제거
+813.0,제1정규형(1NF)의 조건은?,,2,3,후보키 결정
+813.0,제1정규형(1NF)의 조건은?,,2,4,조인 수행
+818.0,관계형 데이터베이스의 구성 요소가 아닌 것은?,,3,1,테이블
+818.0,관계형 데이터베이스의 구성 요소가 아닌 것은?,,3,2,트랜잭션
+818.0,관계형 데이터베이스의 구성 요소가 아닌 것은?,,3,3,애플리케이션
+818.0,관계형 데이터베이스의 구성 요소가 아닌 것은?,,3,4,뷰(View)
+819.0,SQL의 주요 기능이 아닌 것은?,,4,1,데이터 정의(DDL)
+819.0,SQL의 주요 기능이 아닌 것은?,,4,2,데이터 조작(DML)
+819.0,SQL의 주요 기능이 아닌 것은?,,4,3,데이터 제어(DCL)
+819.0,SQL의 주요 기능이 아닌 것은?,,4,4,사용자 인터페이스 디자인
+16.0,다음 중 데이터를 조회할 때 빠른 성능을 낼 수있도록 하기 위해 원래 속성의 값을 계산하여 저장할 수 있도록 만든 속성으로 가장 적절한 것은?,,4,1,PK속성 (Derived Attribute)
+16.0,다음 중 데이터를 조회할 때 빠른 성능을 낼 수있도록 하기 위해 원래 속성의 값을 계산하여 저장할 수 있도록 만든 속성으로 가장 적절한 것은?,,4,2,설계속성(Designed Attribute)
+16.0,다음 중 데이터를 조회할 때 빠른 성능을 낼 수있도록 하기 위해 원래 속성의 값을 계산하여 저장할 수 있도록 만든 속성으로 가장 적절한 것은?,,4,3,기본속성 (Basic Attribute)
+16.0,다음 중 데이터를 조회할 때 빠른 성능을 낼 수있도록 하기 위해 원래 속성의 값을 계산하여 저장할 수 있도록 만든 속성으로 가장 적절한 것은?,,4,4,파생속성 (Derived Attribute)
+20.0,다음 중 관계에 대한 설명으로 가장 부적절한 것은?,,3,1,주문과 배송 엔터티 간의 '배송근거' 관계는 행위에 의한 관계의 사례이다.
+20.0,다음 중 관계에 대한 설명으로 가장 부적절한 것은?,,3,2,부서와 사원 엔터티 간의 '소속' 관계는 존재적 관계의 사례이다.
+20.0,다음 중 관계에 대한 설명으로 가장 부적절한 것은?,,3,3,"관계의 표기법은 관계명, 관계차수. 식별성의 3가지 개념을 사용한다."
+20.0,다음 중 관계에 대한 설명으로 가장 부적절한 것은?,,3,4,관계는 존재적 관계와 행위에 의한 관계로 나누어볼 수 있다.
+30.0,다음 중 성능 데이터모델링에 대한 설명으로 가장 부적절한 것은?,,4,1,분석/설계 단계에서 성능을 고려한 데이터모델링을 수행할 경우 성능 저하에 따른 Rework비용을 최소화 할 수 있는 기회를 가지게 된다.
+30.0,다음 중 성능 데이터모델링에 대한 설명으로 가장 부적절한 것은?,,4,2,데이터모델은 성능을 튜닝하면서 변경이 될 수 있는 특징이 있다.
+30.0,다음 중 성능 데이터모델링에 대한 설명으로 가장 부적절한 것은?,,4,3,데이터의 증가가 빠를수록 성능저하에 따른 성능개선비용은 증가한다.
+30.0,다음 중 성능 데이터모델링에 대한 설명으로 가장 부적절한 것은?,,4,4,성능이 저하된 결과를 대상으로 데이터모델 보다는 문제발생 시점의 SQL을 중심으로 집중하여 튜닝을 한다.
+86.0,"다음 중 5개의 테이블로부터 필요한 칼럼을 조회하려고 할 때, 최소 몇 개의 JOIN 조건이 필요한가?",,2,1,5개
+86.0,"다음 중 5개의 테이블로부터 필요한 칼럼을 조회하려고 할 때, 최소 몇 개의 JOIN 조건이 필요한가?",,2,2,4개
+86.0,"다음 중 5개의 테이블로부터 필요한 칼럼을 조회하려고 할 때, 최소 몇 개의 JOIN 조건이 필요한가?",,2,3,3개
+86.0,"다음 중 5개의 테이블로부터 필요한 칼럼을 조회하려고 할 때, 최소 몇 개의 JOIN 조건이 필요한가?",,2,4,2개
+94.0,다음 중 팀(TEAM) 테이블과 구장(STADIUM) 테이블의 관계를 아용해서 소속팀이 가지고 있는 전용구장의 정보를 팀의 정보와 함께 출력하는 SQL을 작성할 때 결과가 다른 것은?,,4,1,"SELECT TEAM.REGION_NAME, TEAM.TEAM_NAME, 
+TEAM.STADIUM_ID, STADIUM.STADIUM_NAME 
+FROM TEAM, STADIUM 
+WHERE TEAM.STADIUM_ID = STADIUM.STADIUM_ID;"
+94.0,다음 중 팀(TEAM) 테이블과 구장(STADIUM) 테이블의 관계를 아용해서 소속팀이 가지고 있는 전용구장의 정보를 팀의 정보와 함께 출력하는 SQL을 작성할 때 결과가 다른 것은?,,4,2,"SELECT T.REGION_NAME, T.TEAM_NAME, T.STADIUM_ID, 
+S.STADIUM_NAME
+ FROM TEAM T, STADIUM S
+ WHERE T.STADIUM_ID = S.STADIUM_ID;"
+94.0,다음 중 팀(TEAM) 테이블과 구장(STADIUM) 테이블의 관계를 아용해서 소속팀이 가지고 있는 전용구장의 정보를 팀의 정보와 함께 출력하는 SQL을 작성할 때 결과가 다른 것은?,,4,3,"SELECT TEAM.REGION_NAME, TEAM.TEAM_NAME, 
+TEAM.STADIUM_ID, STADIUM.STADIUM_NAME 
+FROM TEAM INNER JOIN STADIUM
+ ON (TEAM.STADIUM_ID =
+ STADIUM.STADIUM_ID) ;"
+94.0,다음 중 팀(TEAM) 테이블과 구장(STADIUM) 테이블의 관계를 아용해서 소속팀이 가지고 있는 전용구장의 정보를 팀의 정보와 함께 출력하는 SQL을 작성할 때 결과가 다른 것은?,,4,4,"SELECT T.REGION_NAME, T.TEAM_NAME, T.STADIUM_ID, 
+S.STADIUM_NAME
+ FROM TEAM T INNER JOIN STADIUM S
+ USING (T.STADIUM_ID = S.STADIUM_ID);"
+122.0,다음 중 뷰(View)에 대한 설명으로 가장 부적절한 것은?,,3,1,실제 데이터를 저장하고 있는 뷰를 생성하는 기능을 지원하는 DBMS도 있다.
+122.0,다음 중 뷰(View)에 대한 설명으로 가장 부적절한 것은?,,3,2,뷰는 보안을 강화하기 위한 목적으로도 활용할 수 있다.
+122.0,다음 중 뷰(View)에 대한 설명으로 가장 부적절한 것은?,,3,3,"뷰는 복잡한 SQL 문장을 단순화 시켜주는 장점이 있는 반면, 테이블 구조가 변경되면 응용 프로그램을 변경해 주어야 한다."
+122.0,다음 중 뷰(View)에 대한 설명으로 가장 부적절한 것은?,,3,4,"뷰는 단지 정의만을 가지고 있으며, 실행 시점에 질의를 재작성하여 수행한다."
+152.0,데이터 모델링에 대한 설명 중 알맞은 것은?,,1,1,논리 모델링이 외래키는 물리 모델에서 반드시 구현되지는 않는다.
+152.0,데이터 모델링에 대한 설명 중 알맞은 것은?,,1,2,물리 모델링 -> 논리 모델링 -> 개념 모델링 단계로 갈수록 구체적이다.
+152.0,데이터 모델링에 대한 설명 중 알맞은 것은?,,1,3,실제로 데이터베이스를 구축할 때 참고되는 모델은 개념적 데이터 모델링이다.
+152.0,데이터 모델링에 대한 설명 중 알맞은 것은?,,1,4,"데이터 모델링의 3가지 요소는 Process, Attributes, Relationships이다."
+157.0,Hash Join 기법에 대한 설명으로 옳은 것은?,,4,1,Hash Join은 조인 칼럼의 인덱스가 존재하지 않으면 사용할 수 없는 기법이다.
+157.0,Hash Join 기법에 대한 설명으로 옳은 것은?,,4,2,해시 테이블을 저장할 때 메모리에 적재 할 수 있는 영역의 크기보다 커지면 초과한 크기를 제외한 영역만큼 메모리에 적재한다.
+157.0,Hash Join 기법에 대한 설명으로 옳은 것은?,,4,3,Hash Join은 해시 함수를 이용하여 조인을 수행하기 때문에 '='로 수행하는 조인인 동등조건 이외에도 사용할 수 있다.
+157.0,Hash Join 기법에 대한 설명으로 옳은 것은?,,4,4,조인 작업을 수행할 때는 결과 행의 수가 적은 테이블을 선행 테이블로 사용하는 것이 좋다.
+180.0,다음과 같은 SQL 문장이 있다. 예제의 ORDER BY 절과 같은 결과를 갖는 구문은 어떤 것인가?,"SELECT PLAYER_NAME 선수명, POSITION 포지션, BACK_NO 백넘버 
+FROM PLAYER
+ORDER BY PLAYER_NAME, POSITION, BACK_NO DESC;",4,1,"ORDER BY 1 DESC, 2, 백넘버"
+180.0,다음과 같은 SQL 문장이 있다. 예제의 ORDER BY 절과 같은 결과를 갖는 구문은 어떤 것인가?,"SELECT PLAYER_NAME 선수명, POSITION 포지션, BACK_NO 백넘버 
+FROM PLAYER
+ORDER BY PLAYER_NAME, POSITION, BACK_NO DESC;",4,2,"ORDER BY PLAYER_NAME ASC, 2, 3"
+180.0,다음과 같은 SQL 문장이 있다. 예제의 ORDER BY 절과 같은 결과를 갖는 구문은 어떤 것인가?,"SELECT PLAYER_NAME 선수명, POSITION 포지션, BACK_NO 백넘버 
+FROM PLAYER
+ORDER BY PLAYER_NAME, POSITION, BACK_NO DESC;",4,3,"ORDER BY 선수명, 2, DESC 백넘버"
+180.0,다음과 같은 SQL 문장이 있다. 예제의 ORDER BY 절과 같은 결과를 갖는 구문은 어떤 것인가?,"SELECT PLAYER_NAME 선수명, POSITION 포지션, BACK_NO 백넘버 
+FROM PLAYER
+ORDER BY PLAYER_NAME, POSITION, BACK_NO DESC;",4,4,"ORDER BY 선수명 ASC, 포지션, 3 DESC"
+183.0,4개의 테이블로부터 필요한 칼럼을 조회하려고 한다. 최소 몇 개의 JOIN 조건이 필요한가?,,3,1,5개
+183.0,4개의 테이블로부터 필요한 칼럼을 조회하려고 한다. 최소 몇 개의 JOIN 조건이 필요한가?,,3,2,4개
+183.0,4개의 테이블로부터 필요한 칼럼을 조회하려고 한다. 최소 몇 개의 JOIN 조건이 필요한가?,,3,3,3개
+183.0,4개의 테이블로부터 필요한 칼럼을 조회하려고 한다. 최소 몇 개의 JOIN 조건이 필요한가?,,3,4,2개
+189.0,그룹 내 순위 관련 WINDOW 함수의 특징으로 틀린 것은?,,1,1,CUMM_RANK 함수는 누적된 순위를 부여할 수 있다(등수를 누적 순위로 표현함).
+189.0,그룹 내 순위 관련 WINDOW 함수의 특징으로 틀린 것은?,,1,2,RANK 함수가 동일한 값에 대해서는 동일한 순위를 부여하는 데 반해 ROW_NUMBER 함수는 고유한 순위를 부여한다(같은 등수가 존재할 수 없음).
+189.0,그룹 내 순위 관련 WINDOW 함수의 특징으로 틀린 것은?,,1,3,DENSE_RANK 함수는 RANK 함수와 흡사하나 동일한 순위를 하나의 건수로 취급하는 것이 틀린 점이다(같은 등수에 여럿이 존재하는 경우에도 등수가 SKIP되지 않음).
+189.0,그룹 내 순위 관련 WINDOW 함수의 특징으로 틀린 것은?,,1,4,RANK 함수는 동일한 값에 대해서는 동일한 순위를 부여한다(같은 등수에 여럿이 존재하는 경우 등수가 SKIP될 수 있음).
+213.0,다음 중 홍길동 사용자에게 아래의 작업을 실행할 수 있도록 권한을 부여한 것으로 올바른 것은 무엇인가?,"Update emp set sal=1000
+where deptno=100;",4,1,grant create table on 홍길동 on emp;
+213.0,다음 중 홍길동 사용자에게 아래의 작업을 실행할 수 있도록 권한을 부여한 것으로 올바른 것은 무엇인가?,"Update emp set sal=1000
+where deptno=100;",4,2,"revoke select, update on emp;"
+213.0,다음 중 홍길동 사용자에게 아래의 작업을 실행할 수 있도록 권한을 부여한 것으로 올바른 것은 무엇인가?,"Update emp set sal=1000
+where deptno=100;",4,3,"grant select, update on emp;"
+213.0,다음 중 홍길동 사용자에게 아래의 작업을 실행할 수 있도록 권한을 부여한 것으로 올바른 것은 무엇인가?,"Update emp set sal=1000
+where deptno=100;",4,4,"grant select, update on emp to 홍길동;"
+218.0,다음 SQL문의 실행 결과는 무엇인가?,"SELECT COALESCE(NULL,'2','1') FROM DUAL;",3,1,
+218.0,다음 SQL문의 실행 결과는 무엇인가?,"SELECT COALESCE(NULL,'2','1') FROM DUAL;",3,2,3
+218.0,다음 SQL문의 실행 결과는 무엇인가?,"SELECT COALESCE(NULL,'2','1') FROM DUAL;",3,3,2
+218.0,다음 SQL문의 실행 결과는 무엇인가?,"SELECT COALESCE(NULL,'2','1') FROM DUAL;",3,4,1
+225.0,CASE문에서 ELSE를 생략하면 어떤 현상이 발생되는가?,,1,1,ELSE 조건이 만족하게 되면 NULL이 된다.
+225.0,CASE문에서 ELSE를 생략하면 어떤 현상이 발생되는가?,,1,2,ELSE 조건을 만족하게 되면 무시한다.
+225.0,CASE문에서 ELSE를 생략하면 어떤 현상이 발생되는가?,,1,3,ELSE 조건이 만족하게 되면 공집합이 리턴 된다.
+225.0,CASE문에서 ELSE를 생략하면 어떤 현상이 발생되는가?,,1,4,ELSE를 생략하고 작성하면 실행 시 ELSE 조건이 참이 되며 오류가 발생한다.
+273.0,다음 중 DDL 문이 아닌 것은?,,2,1,ALTER
+273.0,다음 중 DDL 문이 아닌 것은?,,2,2,COMMIT
+273.0,다음 중 DDL 문이 아닌 것은?,,2,3,RENAME
+273.0,다음 중 DDL 문이 아닌 것은?,,2,4,CREATE TABLE
+275.0,다음 SQL문의 실행 결과로 올바른 것은?,"Create table Mytest(COL1 number(10));
+INSERT INTO Mytest VALUES(2);
+INSERT INTO Mytest VALUES(2);
+SAVEPOINT SV1;
+UPDATE Mytest SET COL1=7 WHERE COL1=2;
+INSERT INTO Mytest VALUES(9);
+SAVEPOINT SV2;
+DELETE Mytest WHERE CO1=7;
+INSERT INTO Mytest VALUES(11);
+SAVEPOINT SV3;
+INSERT INTO Mytest VALUES(20);
+ROLLBACK TO SV2;
+COMMIT;
+SELECT * FROM mytest;",1,1,"7,7,9"
+275.0,다음 SQL문의 실행 결과로 올바른 것은?,"Create table Mytest(COL1 number(10));
+INSERT INTO Mytest VALUES(2);
+INSERT INTO Mytest VALUES(2);
+SAVEPOINT SV1;
+UPDATE Mytest SET COL1=7 WHERE COL1=2;
+INSERT INTO Mytest VALUES(9);
+SAVEPOINT SV2;
+DELETE Mytest WHERE CO1=7;
+INSERT INTO Mytest VALUES(11);
+SAVEPOINT SV3;
+INSERT INTO Mytest VALUES(20);
+ROLLBACK TO SV2;
+COMMIT;
+SELECT * FROM mytest;",1,2,"7,9,11,9"
+275.0,다음 SQL문의 실행 결과로 올바른 것은?,"Create table Mytest(COL1 number(10));
+INSERT INTO Mytest VALUES(2);
+INSERT INTO Mytest VALUES(2);
+SAVEPOINT SV1;
+UPDATE Mytest SET COL1=7 WHERE COL1=2;
+INSERT INTO Mytest VALUES(9);
+SAVEPOINT SV2;
+DELETE Mytest WHERE CO1=7;
+INSERT INTO Mytest VALUES(11);
+SAVEPOINT SV3;
+INSERT INTO Mytest VALUES(20);
+ROLLBACK TO SV2;
+COMMIT;
+SELECT * FROM mytest;",1,3,"7,9,11"
+275.0,다음 SQL문의 실행 결과로 올바른 것은?,"Create table Mytest(COL1 number(10));
+INSERT INTO Mytest VALUES(2);
+INSERT INTO Mytest VALUES(2);
+SAVEPOINT SV1;
+UPDATE Mytest SET COL1=7 WHERE COL1=2;
+INSERT INTO Mytest VALUES(9);
+SAVEPOINT SV2;
+DELETE Mytest WHERE CO1=7;
+INSERT INTO Mytest VALUES(11);
+SAVEPOINT SV3;
+INSERT INTO Mytest VALUES(20);
+ROLLBACK TO SV2;
+COMMIT;
+SELECT * FROM mytest;",1,4,"1,2"
+292.0,다음 중 파티션에 대한 설명으로 올바르지 않은 것은?,,1,1,"AVG(SAL) OVER
+(PARTITION BY MGR
+ORDER BY TODAY
+ROWS BETWEEN 1 PRECEDING
+AND 1 FOLLOWING)
+: 각 MGR 별로 앞의 한 건, 현재 행, 뒤의 한 건 사이에서 SAL의 평균을 계산한다."
+292.0,다음 중 파티션에 대한 설명으로 올바르지 않은 것은?,,1,2,"COUNT(*) OVER
+(ORDER BY SAL)
+RANGE BETWEEN
+10 PRECEDING
+AND 150 FOLLOWING)
+: SAL을 기준으로 현재 행에서의 SAL의 -10에서 +150사이의 급여를 가지는 행의 수를 계산한다."
+292.0,다음 중 파티션에 대한 설명으로 올바르지 않은 것은?,,1,3,"SUM(SAL) OVER
+(PARTITION BY MGR
+ORDER BY SAL
+RANGE UNBOUNDED
+PRECEDING)
+:각 MGR별 현재 행부터 파티션 내 첫 번째 행까지의 SAL의 합계를 계산한다."
+292.0,다음 중 파티션에 대한 설명으로 올바르지 않은 것은?,,1,4,"RANK() OVER
+(PARTITION BY JOB
+ORDER BY SAL ASC) JOB_RANK
+:각 JOB 별 SAL이 낮은 순서대로 순위가 부여된다. "
+300.0,다음의 SQL문을 ANSI 표준 SQL문으로 올바르게 변환한 것은?,"SELECT * FROM SCOTT.EMP A, SCOTT.DEPT B
+WHERE A.DEPTNO = B.DEPTNO
+AND B.DNAME = 'SALES';",1,1,"SELECT * FROM SCOTT.EMP A
+INNER JOIN SCOTT.DEPT B
+ON A.DEPTNO = B.DEPTNO WHERE 1=1
+AND B.DNAME = 'SALES';"
+300.0,다음의 SQL문을 ANSI 표준 SQL문으로 올바르게 변환한 것은?,"SELECT * FROM SCOTT.EMP A, SCOTT.DEPT B
+WHERE A.DEPTNO = B.DEPTNO
+AND B.DNAME = 'SALES';",1,2,"SELECT * FROM SCOTT.EMP A
+CROSS JOIN SCOTT.DEPT B
+ON (A.DEPTNO = B.DEPTNO AND
+B.DNAME = 'SALES');"
+300.0,다음의 SQL문을 ANSI 표준 SQL문으로 올바르게 변환한 것은?,"SELECT * FROM SCOTT.EMP A, SCOTT.DEPT B
+WHERE A.DEPTNO = B.DEPTNO
+AND B.DNAME = 'SALES';",1,3,"SELECT * FROM SCOTT.EMP A
+RIGHT OUTER JOIN SCOTT.DEPT B
+ON (A.DEPTNO = B.DEPTNO AND
+B.DNAME = 'SALES');"
+300.0,다음의 SQL문을 ANSI 표준 SQL문으로 올바르게 변환한 것은?,"SELECT * FROM SCOTT.EMP A, SCOTT.DEPT B
+WHERE A.DEPTNO = B.DEPTNO
+AND B.DNAME = 'SALES';",1,4,"SELECT * FROM SCOTT.EMP A 
+LEFT OUTER JOIN SCOTT.DEPT B
+ON(A.DEPTNO = B.DEPTNO AND
+B.DNAME 'SALES');"
+314.0,엔터티 간의 관계 중 비식별 관계에 대한 설명으로 올바르지 않은 것은?,,1,1,반드시 부모 엔터티에 종속한다.
+314.0,엔터티 간의 관계 중 비식별 관계에 대한 설명으로 올바르지 않은 것은?,,1,2,부모 쪽의 관계 참여가 선택적 관계이다.
+314.0,엔터티 간의 관계 중 비식별 관계에 대한 설명으로 올바르지 않은 것은?,,1,3,엔터티 간의 관계를 점선으로 표현한다.
+314.0,엔터티 간의 관계 중 비식별 관계에 대한 설명으로 올바르지 않은 것은?,,1,4,약한 연결 관계를 표현하고 있다.
+321.0,"다음 중 엔터티, 인스턴스, 속성, 속성 값의 관계로 올바르지 않은 것은?",,1,1,한 개의 엔터티는 한 개의 속성만 가지고 있다.
+321.0,"다음 중 엔터티, 인스턴스, 속성, 속성 값의 관계로 올바르지 않은 것은?",,1,2,한 개의 엔터티에는 두 개 이상의 인스턴스가 있다.
+321.0,"다음 중 엔터티, 인스턴스, 속성, 속성 값의 관계로 올바르지 않은 것은?",,1,3,한 개의 속성은 한 개의 속성값을 가지고 있다.
+321.0,"다음 중 엔터티, 인스턴스, 속성, 속성 값의 관계로 올바르지 않은 것은?",,1,4,한 개의 엔터티에는 두 개 이상의 속성이 있다.
+327.0,다음 SQL문에 대한 실행 계획을 읽는 순서로 올바른 것은?,"1. Nested loops
+2.    Hash join
+3.    TABLE ACCESS (FULL) TABLE1
+4.    TABLE ACCESS (FULL) TABLE2
+5.  TABLE ACCESS (BY ROWID) TABLE3
+6.     INDEX (UNIQUE SCAN) PK_TABLES3",4,1,"6,5,4,3,2,1"
+327.0,다음 SQL문에 대한 실행 계획을 읽는 순서로 올바른 것은?,"1. Nested loops
+2.    Hash join
+3.    TABLE ACCESS (FULL) TABLE1
+4.    TABLE ACCESS (FULL) TABLE2
+5.  TABLE ACCESS (BY ROWID) TABLE3
+6.     INDEX (UNIQUE SCAN) PK_TABLES3",4,2,"3,4,6,2,5,1"
+327.0,다음 SQL문에 대한 실행 계획을 읽는 순서로 올바른 것은?,"1. Nested loops
+2.    Hash join
+3.    TABLE ACCESS (FULL) TABLE1
+4.    TABLE ACCESS (FULL) TABLE2
+5.  TABLE ACCESS (BY ROWID) TABLE3
+6.     INDEX (UNIQUE SCAN) PK_TABLES3",4,3,"1,2,3,4,5,6"
+327.0,다음 SQL문에 대한 실행 계획을 읽는 순서로 올바른 것은?,"1. Nested loops
+2.    Hash join
+3.    TABLE ACCESS (FULL) TABLE1
+4.    TABLE ACCESS (FULL) TABLE2
+5.  TABLE ACCESS (BY ROWID) TABLE3
+6.     INDEX (UNIQUE SCAN) PK_TABLES3",4,4,"3,4,2,6,5,1"
+344.0,다음 중 서브쿼리에 대한 설명으로 올바르지 않은 것은?,,2,1,"서브쿼리는 SELECT절, FROM절, WHERE절 등에서 사용 가능하다."
+344.0,다음 중 서브쿼리에 대한 설명으로 올바르지 않은 것은?,,2,2,메인쿼리에서 서브쿼리 내에 있는 칼럼을 사용할 수 없다.
+344.0,다음 중 서브쿼리에 대한 설명으로 올바르지 않은 것은?,,2,3,"서브쿼리는 단일행 서브쿼리와 다중행 서브쿼리로 분리되고 다중행 서브쿼리의 경우 IN, ANY, EXISTS, ALL과 같은 함수를 사용해야 한다."
+344.0,다음 중 서브쿼리에 대한 설명으로 올바르지 않은 것은?,,2,4,"서브쿼리는 SQL문의 SELECT구, FROM구, WHERE구 모두 사용이 가능하다."
+369.0,TRUNCATE TABLE 명령어에 대한 특징으로 가장 올바른 것은?,,4,1,삭제한 데이터는 되돌릴 수 있다.
+369.0,TRUNCATE TABLE 명령어에 대한 특징으로 가장 올바른 것은?,,4,2,테이블 용량은 줄어들지 않는다.
+369.0,TRUNCATE TABLE 명령어에 대한 특징으로 가장 올바른 것은?,,4,3,테이블의 구조를 포함한 테이블 자체가 삭제된다.
+369.0,TRUNCATE TABLE 명령어에 대한 특징으로 가장 올바른 것은?,,4,4,특정 행을 삭제할 수 없다.
+374.0,"다음의 SQL문이 실행되었을 때 ""실행 결과""와 같이 조회되는 것은?",,2,1,SELECT * FROM MYTEST;
+374.0,"다음의 SQL문이 실행되었을 때 ""실행 결과""와 같이 조회되는 것은?",,2,2,"SELECT * FROM MYTEST START WITH CCOL3 = 'B'
+CONNECT BY PRIOR NCOL1 = NCOL2 AND
+PRIOR CCOL4 = 'B';"
+374.0,"다음의 SQL문이 실행되었을 때 ""실행 결과""와 같이 조회되는 것은?",,2,3,"SELECT * FROM MYTEST START WITH CCOL3 = 'B'
+CONNECT BY PRIOR NCOL1 = NCOL2 AND
+PRIOR CCOL3 = 'B';"
+374.0,"다음의 SQL문이 실행되었을 때 ""실행 결과""와 같이 조회되는 것은?",,2,4,"SELECT * FROM MYTEST WHERE NCOL1 =4
+START WITH NCOL2 IS NULL CONNECT BY PRIOR NCOL1 = NCOL2;"
+388.0,다음 중 물리적 테이블 명으로 올바른 것은?,,4,1,100-ABC
+388.0,다음 중 물리적 테이블 명으로 올바른 것은?,,4,2,ABC-1A00
+388.0,다음 중 물리적 테이블 명으로 올바른 것은?,,4,3,200_TAB
+388.0,다음 중 물리적 테이블 명으로 올바른 것은?,,4,4,ABC_100
+399.0,다음 SQL의 실행 결과는?,"SELECT 1 FROM DUAL
+UNION
+SELECT 2 FROM DUAL
+UNION
+SELECT 1 FROM DUAL;",3,1,"1,2,1"
+399.0,다음 SQL의 실행 결과는?,"SELECT 1 FROM DUAL
+UNION
+SELECT 2 FROM DUAL
+UNION
+SELECT 1 FROM DUAL;",3,2,"2,1"
+399.0,다음 SQL의 실행 결과는?,"SELECT 1 FROM DUAL
+UNION
+SELECT 2 FROM DUAL
+UNION
+SELECT 1 FROM DUAL;",3,3,"1,2"
+399.0,다음 SQL의 실행 결과는?,"SELECT 1 FROM DUAL
+UNION
+SELECT 2 FROM DUAL
+UNION
+SELECT 1 FROM DUAL;",3,4,1
+405.0,식별자 분류체계에서 업무에 의해서 만들어지는 식별자로 대체 여부로 분류되는 것은?,,2,1,단일 식별자
+405.0,식별자 분류체계에서 업무에 의해서 만들어지는 식별자로 대체 여부로 분류되는 것은?,,2,2,본질 식별자
+405.0,식별자 분류체계에서 업무에 의해서 만들어지는 식별자로 대체 여부로 분류되는 것은?,,2,3,내부 식별자
+405.0,식별자 분류체계에서 업무에 의해서 만들어지는 식별자로 대체 여부로 분류되는 것은?,,2,4,주식별자
+439.0,SELECT문의 결과 집합에 따른 가상의 순번은 무엇인가?,,3,1,HASH
+439.0,SELECT문의 결과 집합에 따른 가상의 순번은 무엇인가?,,3,2,COUNT
+439.0,SELECT문의 결과 집합에 따른 가상의 순번은 무엇인가?,,3,3,ROWNUM
+439.0,SELECT문의 결과 집합에 따른 가상의 순번은 무엇인가?,,3,4,ROWID
+440.0,DBA가 데이터를 잘못 수정하여서 COMMIT 하기 전 원래의 값으로 복원하는 SQL구는?,,3,1,REVOKE
+440.0,DBA가 데이터를 잘못 수정하여서 COMMIT 하기 전 원래의 값으로 복원하는 SQL구는?,,3,2,GRANT
+440.0,DBA가 데이터를 잘못 수정하여서 COMMIT 하기 전 원래의 값으로 복원하는 SQL구는?,,3,3,ROLLBACK
+440.0,DBA가 데이터를 잘못 수정하여서 COMMIT 하기 전 원래의 값으로 복원하는 SQL구는?,,3,4,COMMIT
+444.0,다음의 정규화 단계에서 주식별자와 관련성이 가장 낮은 것은?,,2,1,BCNF
+444.0,다음의 정규화 단계에서 주식별자와 관련성이 가장 낮은 것은?,,2,2,제3정규화
+444.0,다음의 정규화 단계에서 주식별자와 관련성이 가장 낮은 것은?,,2,3,제2정규화
+444.0,다음의 정규화 단계에서 주식별자와 관련성이 가장 낮은 것은?,,2,4,제1정규화
+445.0,엔터티의 종류 중 다:다 관계를 해소하려는 목적으로 인위적으로 만들어진 엔터티는 무엇인가?,,2,1,종속 엔터티
+445.0,엔터티의 종류 중 다:다 관계를 해소하려는 목적으로 인위적으로 만들어진 엔터티는 무엇인가?,,2,2,교차 엔터티
+445.0,엔터티의 종류 중 다:다 관계를 해소하려는 목적으로 인위적으로 만들어진 엔터티는 무엇인가?,,2,3,행위 엔터티
+445.0,엔터티의 종류 중 다:다 관계를 해소하려는 목적으로 인위적으로 만들어진 엔터티는 무엇인가?,,2,4,기본 엔터티
+455.0,다음의 GROUP BY문구와 동일한 SQL문을 고르시오.,"GROUP BY CUBE(DEPTNO, JOB);",3,1,동일한 보기가 없음
+455.0,다음의 GROUP BY문구와 동일한 SQL문을 고르시오.,"GROUP BY CUBE(DEPTNO, JOB);",3,2,"GROUP BY DEPTNO UNION ALL
+GROUP BY JOB UNION ALL
+GROUP BY (JOB, DEPTNO)"
+455.0,다음의 GROUP BY문구와 동일한 SQL문을 고르시오.,"GROUP BY CUBE(DEPTNO, JOB);",3,3,"GROUP BY GROUPING SETS
+(DEPTNO, JOB, (DEPTNO, JOB), ());"
+455.0,다음의 GROUP BY문구와 동일한 SQL문을 고르시오.,"GROUP BY CUBE(DEPTNO, JOB);",3,4,GROUP BY ROLLUP(DEPTNO);
+487.0,"다음 중 엔터티, 관계, 속성에 대한 설명으로 올바르지 않은 것은?",,3,1,한 개의 속성은 한 개의 속성값을 갖는다.
+487.0,"다음 중 엔터티, 관계, 속성에 대한 설명으로 올바르지 않은 것은?",,3,2,한 개의 엔터티는 두 개 이상의 속성을 갖는다.
+487.0,"다음 중 엔터티, 관계, 속성에 대한 설명으로 올바르지 않은 것은?",,3,3,엔터티는 관계를 두 개까지만 가질 수 있다.
+487.0,"다음 중 엔터티, 관계, 속성에 대한 설명으로 올바르지 않은 것은?",,3,4,한 개의 엔터티는 두 개 이상의 인스턴스 집합이어야 한다.
+509.0,다음 보기 중 SELF JOIN을 수행해야 하는 경우로 가장 올바른 것은?,,4,1,한 테이블 내에서 서로 연관된 칼럼이 없을 경우 사용하는 방법이다.
+509.0,다음 보기 중 SELF JOIN을 수행해야 하는 경우로 가장 올바른 것은?,,4,2,온라인 쇼핑몰에서 주문정보는 주문정보를 사용해서 SELF JOIN을 한다.
+509.0,다음 보기 중 SELF JOIN을 수행해야 하는 경우로 가장 올바른 것은?,,4,3,네트워크로 분산된 시스템에서 같은 2개의 테이블을 조인하기 위해서 사용된다.
+509.0,다음 보기 중 SELF JOIN을 수행해야 하는 경우로 가장 올바른 것은?,,4,4,동일한 테이블 내에서 두 개의 칼럼 간에 조인을 수행한다.
+519.0,주어진 보기의 SQL(ROLLUP)에 대한 결과와 동일한 결과를 반환하도록 아래 SQL문의 (     )에 올바른 것은?,"SELECT COL1, COL2, COUNT(*)
+FROM TEST46
+GROUP BY ROLLUP (COL1, COL2);
+
+SELECT COL1, COL2, COUNT(*)
+FROM TEST46
+GROUP BY GROUPING SETS (       )",1,1,UNION ALL
+519.0,주어진 보기의 SQL(ROLLUP)에 대한 결과와 동일한 결과를 반환하도록 아래 SQL문의 (     )에 올바른 것은?,"SELECT COL1, COL2, COUNT(*)
+FROM TEST46
+GROUP BY ROLLUP (COL1, COL2);
+
+SELECT COL1, COL2, COUNT(*)
+FROM TEST46
+GROUP BY GROUPING SETS (       )",1,2,MINUS

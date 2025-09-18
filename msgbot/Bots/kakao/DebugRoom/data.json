@@ -1,0 +1,20 @@
+{
+    "chats": [
+        {
+            "sender": "DEBUG SENDER",
+            "content": "안녕",
+            "timeMillis": 1750420803893,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/Bots\/kakao\/DebugRoom\/message\/1750420803893-7011038395396}"
+        },
+        {
+            "sender": "kakao",
+            "content": "반응 완료",
+            "timeMillis": 1750420803906,
+            "isBot": true,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/Bots\/kakao\/DebugRoom\/message\/1750420803906-7011050319876}"
+        }
+    ]
+}

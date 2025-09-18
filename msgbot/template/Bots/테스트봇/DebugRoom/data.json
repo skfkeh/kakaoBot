@@ -1,0 +1,124 @@
+{
+    "chats": [
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421004879,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/test\/DebugRoom\/message\/1750421004879-7212024944122}"
+        },
+        {
+            "sender": "test",
+            "content": "qqqq",
+            "timeMillis": 1750421004886,
+            "isBot": true,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/test\/DebugRoom\/message\/1750421004886-7212030860164}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421070882,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421070882-7278026282170}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421085608,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421085608-7292752469299}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421097405,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421097405-7304549434555}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421122778,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421122778-7329921731316}"
+        },
+        {
+            "sender": "테스트봇",
+            "content": "qqqq",
+            "timeMillis": 1750421122782,
+            "isBot": true,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421122782-7329926763660}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421148656,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421148656-7355800523755}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "t",
+            "timeMillis": 1750421173287,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421173287-7380431063433}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421175244,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421175244-7382389290255}"
+        },
+        {
+            "sender": "테스트봇",
+            "content": "qqqq",
+            "timeMillis": 1750421175250,
+            "isBot": true,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421175250-7382394490046}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421197986,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421197986-7405130471340}"
+        },
+        {
+            "sender": "테스트봇",
+            "content": "qqqq",
+            "timeMillis": 1750421197998,
+            "isBot": true,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421197998-7405141735090}"
+        },
+        {
+            "sender": "DEBUG SENDER",
+            "content": "tt",
+            "timeMillis": 1750421382621,
+            "isBot": false,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421382621-7589765666634}"
+        },
+        {
+            "sender": "테스트봇",
+            "content": "qqqq",
+            "timeMillis": 1750421382627,
+            "isBot": true,
+            "isLong": false,
+            "long": "\/storage\/emulated\/0\/msgbot\/template\/Bots\/테스트봇\/DebugRoom\/message\/1750421382627-7589772313926}"
+        }
+    ]
+}

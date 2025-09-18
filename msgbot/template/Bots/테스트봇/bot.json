@@ -1,0 +1,21 @@
+{
+    "main": "test.js",
+    "option": {
+        "apiLevel": 1,
+        "useUnifiedParams": false,
+        "useBabel": false,
+        "scriptPower": true,
+        "debugRoom": {
+            "name": "DEBUG ROOM",
+            "sender": "DEBUG SENDER",
+            "isGroupChat": true,
+            "packageName": "com.xfl.msgbot"
+        },
+        "targetMessengers": {
+            "com.kakao.talk": true
+        },
+        "ignoreApiOff": false,
+        "offOnRuntimeError": true,
+        "backupDBOnDelete": true
+    }
+}

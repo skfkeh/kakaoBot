@@ -1,0 +1,29 @@
+﻿<Properties>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="kakao_bot_ver1.10.js">
+    <Files>
+      <File FileName="kakaobot_main_ver2.2.js" Line="119" Column="1" IsPinned="True" />
+      <File FileName="kakao_bot_ver1.10.js" Line="231" Column="34" IsPinned="True" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="kakao_bot" expanded="True">
+            <Node name="msgbot" expanded="True" />
+            <Node name="Solution Items" expanded="True">
+              <Node name="/Users/watsonjung/Documents/Project_Pack/01.kakaoBot/kakao_bot/kakao_bot_ver1.10.js" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+</Properties>

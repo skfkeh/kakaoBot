@@ -37,11 +37,10 @@ const Cursor = android.database.Cursor;
 
 // ==================== [SET] 선언부 ====================
 // 1단계에서 발급받은 Gemini API 키
-const GEMINI_API_KEY = "AIzaSyBzt3HzlenXzZZZ_S_lbLV704XWLqr3I64";
-const ADMIN_NAME = ["정승환", "DB가모죠", "공겹방문객", "람대장", "게임이모죠"]; // 관리자 계정
-const MANAGER_NAME = ["박효정", "장지운", "Database/남/db개발", "스리슬쩍", "전산가즈아", "!!m*", "🔨"];
-const ADMIN_HASH = [-88839105];     // 댕
-//, -1959318130 ] // 람
+const GEMINI_API_KEY = "your_api_key";
+const ADMIN_NAME = ["admin"]; // 관리자 계정
+const MANAGER_NAME = ["manager"];
+const ADMIN_HASH = [0000000];
 const MAX_ERROR_COUNT = 5;  // 잘못된 명령어를 입력했을 때, 이스터에그가 발동하기 위한 횟수
 const CHAT_POINT = 1;
 const ATTENDANCE_POINT = 5;
@@ -1085,7 +1084,7 @@ function getUserInfo(room, targetUser) {
         let ChatLogError = "정보를 분석하는 중에 오류가 발생했습니다.\n";
         Log.e("정보 분석 중 오류 발생: " + e);
         replier.reply(ChatLogError + e);
-        Api.replyRoom("정승환", "[" + room + "] 에서 " + ChatLogError + e, false);
+        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 에서 " + ChatLogError + e, false);
     }
 }
 */
@@ -1845,11 +1844,11 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
     let roomGradeIssue = "🚫 해당 방은 아직 등록되지 않았습니다.";
     if ((roomCount < 1 || gradeDB[room] < 1) && isGroupChat) {
         replier.reply(roomGradeIssue + "\n관리자에게 문의 후 사용해주세요.");
-        Api.replyRoom("정승환", "[" + room + "] " + roomGradeIssue, false);
+        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] " + roomGradeIssue, false);
         return;
     } else if ((roomCount < 1 || gradeDB[room] < 1) && !isGroupChat) {
         replier.reply(roomGradeIssue + "\n메세지 확인 후 피드백 드리겠습니다.");
-        Api.replyRoom("정승환", "[" + room + "] " + roomGradeIssue, false);
+        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] " + roomGradeIssue, false);
         return;
     }
 
@@ -2180,7 +2179,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                         let ChatLogError = "채팅 순위를 분석하는 중에 오류가 발생했습니다.\n";
                         Log.e("채팅 순위 분석 중 오류 발생: " + e);
                         replier.reply(ChatLogError + e);
-                        Api.replyRoom("정승환", "[" + room + "] 에서 " + ChatLogError + e, false);
+                        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 에서 " + ChatLogError + e, false);
                     }
                 }
                 if ((roomGradeDB[room] >= 3 || userPoint >= POINT_GRADE_3)
@@ -2736,7 +2735,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
     }
     catch (e) {
         replier.reply(e);
-        Api.replyRoom("정승환", "[" + room + "] 에서 " + ChatLogError + e, false);
+        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 에서 " + ChatLogError + e, false);
     }
 }
 

@@ -1559,12 +1559,20 @@ function loadProverbs() {
     }
 }
 
+// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list
+// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > div
+// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > div > div.sds-comps-base-layout.sds-comps-full-layout.J54mgZ4FBiMyhCFEVGZ1 > a > span
+// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > a > span
+// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > a > span
+// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.dinIcu15dorjuwuLiZx3 > div > a > span
+
+
 function getRandomIN() {
-    const data = org.jsoup.Jsoup.connect("https://search.naver.com/search.naver?ssc=tab.nx.all&where=nexearch&query=&sm=tab_rnd.another").get().select("div.kin_wrap");
+    const data = org.jsoup.Jsoup.connect("https://search.naver.com/search.naver?ssc=tab.nx.all&where=nexearch&query=&sm=tab_rnd.another").get().select("div.fds-kin-item-list");
 
     return [
-        data.select("div.question_txt").text(),
-        data.select("div.answer_area").text()
+        data.select("div.sds-comps-base-layout.sds-comps-full-layout.J54mgZ4FBiMyhCFEVGZ1 > a > span").text() + "\n  ↳ " + data.select("div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > a > span").text(),
+        data.select("div > div.sds-comps-vertical-layout.sds-comps-full-layout.dinIcu15dorjuwuLiZx3 > div > a > span").text()
     ];
 }
 
@@ -2478,7 +2486,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                         }
                         else if (msg === "/지식인") {
                             let knowledge = getRandomIN();
-                            replier.reply(" ** 랜덤지식인 **\n===========================\n[Q]: " + knowledge[0] + "\n\n[A]: " + knowledge[1]);
+                            replier.reply(" 📗 랜덤지식인 🍀\n==========================\n[Q]: " + knowledge[0] + "\n\n[A]: " + knowledge[1]);
                         }
                         else if (msg.startsWith("/주식 ")) {
                             const code = msg.substring(4).trim();
@@ -2498,6 +2506,14 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             //      Log.e("주식 정보 조회 오류 (" + code + "): " + e);
                             //      replier.reply("정보를 가져오는 중 오류가 발생했습니다.\n종목코드가 올바른지 확인해주세요.");
                             //  }
+                        }
+                        else if (msg === "/운세") {
+                            replier.reply("모두의 운세");
+                        }
+                        else if (msg.startsWith("/운세 ")) {
+                            const animals = msg.split(" ")[1];
+                            
+                            replier.reply("당신의 운세");
                         }
                         if ((roomGradeDB[room] >= 5 || userPoint >= POINT_GRADE_5)
                             || (ADMIN_NAME.includes(sender) || MANAGER_NAME.includes(sender))) {

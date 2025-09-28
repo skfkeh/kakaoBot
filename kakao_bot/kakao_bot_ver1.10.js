@@ -2327,18 +2327,19 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                                 replier.reply("맛집을 검색하는 중 오류가 발생했습니다.\n" + e);
                             }
                         }
-                        else if (msg === "/뽐뿌" || msg === "/알리") {
+                        else if (msg === "/자게" || msg === "/유머") {
                             // 명령어별 설정 정의
+                            
                             let configs = {
-                                "/알리": {
-                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=ppomppu8",
+                                "/유머": {
+                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=humor",
                                     skip: 3,
-                                    title: "알리뽐뿌 상위 10개 게시글"
+                                    title: "유머게시판 상위 10개 게시글"
                                 },
-                                "/뽐뿌": {
-                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=ppomppu",
+                                "/자게": {
+                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=freeboard",
                                     skip: 2,
-                                    title: "뽐뿌 상위 10개 게시글"
+                                    title: "자유게시판 상위 10개 게시글"
                                 }
                             };
 
@@ -2363,13 +2364,11 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
 
                                 result.push(displayNumber + ". " + title + "\n" + link);
                             }
-
-                            replier.reply(result);
-                            return;
+                            
                             if (result.length > 0) {
-                                msg.reply(config.title + "\n\n" + result.join("\n\n"));
+                                replier.reply(config.title + "\n\n" + result.join("\n\n"));
                             } else {
-                                msg.reply("❌ 게시글을 찾지 못했습니다.");
+                                replier.reply("❌ 게시글을 찾지 못했습니다.");
                             }
                         }
                         else if (msg === "/속담") {

@@ -1559,14 +1559,6 @@ function loadProverbs() {
     }
 }
 
-// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list
-// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > div
-// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > div > div.sds-comps-base-layout.sds-comps-full-layout.J54mgZ4FBiMyhCFEVGZ1 > a > span
-// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > a > span
-// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > a > span
-// #fdr-849aacecfae84c488d5c003ea6306bf2 > div > div > div > div.sds-comps-vertical-layout.sds-comps-full-layout.fds-kin-item-list > div > div.sds-comps-vertical-layout.sds-comps-full-layout.dinIcu15dorjuwuLiZx3 > div > a > span
-
-
 function getRandomIN() {
     const data = org.jsoup.Jsoup.connect("https://search.naver.com/search.naver?ssc=tab.nx.all&where=nexearch&query=&sm=tab_rnd.another").get().select("div.fds-kin-item-list");
 
@@ -1575,101 +1567,6 @@ function getRandomIN() {
         data.select("div > div.sds-comps-vertical-layout.sds-comps-full-layout.dinIcu15dorjuwuLiZx3 > div > a > span").text()
     ];
 }
-
-/**
- * 네이버 증권에서 종목 정보를 크롤링하는 메인 함수
- * @param {string} code - 종목코드 6자리
- * @returns {string} - 채팅으로 보낼 포맷된 결과 문자열
- */
-function getStockInfo(code) {
-    const url = "https://finance.naver.com/item/main.nhn?code=" + code;
-    let doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
-
-    // --- 3. 데이터 추출 ---
-    const companyName = doc.selectFirst("div.wrap_company > h2 > a").text();
-
-    // 현재가 (상승/하락/보합에 따라 클래스가 바뀌므로 여러 경우를 모두 시도)
-    let currentPrice = "N/A";
-    try {
-        currentPrice = doc.selectFirst("p.no_today").text().split(" ")[0];
-    } catch (e) {
-        currentPrice = "N/A";
-    }
-
-    // 52주 최고가
-    let high52week = "N/A";
-    try {
-        high52week = doc.select("div.tab_con1 table.tbl_invest em").get(2).text();
-    } catch (e) { }
-
-    // 시가총액
-    let marketCapRaw = doc.selectFirst("#_market_sum").text().replace(/,/g, '');
-    let marketCap = marketCapRaw.replace("조", "조 "); // "123조4567" -> "123조 4567"
-
-    // 재무정보 테이블
-    const financeTable = doc.selectFirst("div.section.cop_analysis table > tbody");
-    let financials = { a: [], b: [], c: [], f: [] }; // 매출액, 영업이익, 당기순이익, 부채비율
-
-    try {
-        const rows = financeTable.select("tr");
-        for (let i = 0; i < 3; i++) {
-            financials.a.push(rows.get(0).select("td").get(i).text().replace(/,/g, '') || 'N/A');
-            financials.b.push(rows.get(1).select("td").get(i).text().replace(/,/g, '') || 'N/A');
-            financials.c.push(rows.get(2).select("td").get(i).text().replace(/,/g, '') || 'N/A');
-            financials.f.push(rows.get(6).select("td").get(i).text().replace(/,/g, '') || 'N/A');
-        }
-    } catch (e) { }
-
-    // --- 4. 데이터 가공 및 분석 ---
-
-    // 최고가 대비 현재가 비율
-    let highRatio = "N/A";
-    try {
-        const current = parseFloat(currentPrice.replace(/,/g, ''));
-        const high = parseFloat(high52week.replace(/,/g, ''));
-        if (!isNaN(current) && !isNaN(high) && high > 0) {
-            highRatio = Math.round(current / high * 100) + "%";
-        }
-    } catch (e) { }
-
-    // 재무제표 건전성 체크
-    let financialHealth = "O";
-    let chkVal = 0;
-
-    //[...financials.a, ...financials.b, ...financials.c].forEach(val => {
-    //    if (val === 'N/A' || val === '' || val === '-') chkVal++;
-    //    else if (parseInt(val, 10) <= 0) chkVal++;
-    //});
-
-    //financials.f.forEach(val => {
-    //    if (val === 'N/A' || val === '' || val === '-') return; // 부채비율은 없으면 체크 안함
-    //    else if (parseFloat(val) > 200.0) chkVal++;
-    //});
-
-    if (chkVal > 0) financialHealth = "X";
-
-    // 특이사항 (Python의 check_capital_changes 함수 대체)
-    const specialNote = "확인필요 (별도 공시 확인)";
-
-    // --- 5. 최종 결과 문자열 생성 ---
-    let result = '📈 [' + companyName + '](' + code + ') 주식 정보\n';
-    result += "────────────────────\n";
-    result += '현재가: ' + currentPrice + '원\n';
-    result += '52주 최고가: ' + high52week + '원\n';
-    result += '최고가 대비: ' + highRatio + '\n';
-    result += '시가총액: ' + marketCap + '억원\n';
-    result += '\n📊 [최근 재무 요약]\n';
-    result += '매출액: ' + financials.a.join(' / ') + ' 억원\n';
-    result += '영업이익: ' + financials.b.join(' / ') + ' 억원\n';
-    result += '당기순이익: ' + financials.c.join(' / ') + ' 억원\n';
-    result += '부채비율: ' + financials.f.join(' / ') + '%\n';
-    result += '\n💡 [간편 분석]\n';
-    //result += '재무 건전성: ' + financialHealth + '\n';
-    result += '특이사항: ' + specialNote;
-
-    return result;
-}
-
 
 // ==================== 나무 텍스트 아트 ====================
 // 레벨에 따라 나무의 모습이 변합니다.
@@ -1917,6 +1814,17 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             retMsg += "\n⚐ /포기    : 랜덤게임 포기";
                         } else {
                             retMsg += "\n🅱 /빅    : 빅분기문제 실행";
+                        }
+                        if ((userPoint < POINT_GRADE_4 && roomGradeDB[room] < 4)
+                            || (!ADMIN_NAME.includes(sender) || !MANAGER_NAME.includes(sender))) {
+                            retMsg += "\n\n[다음 단계 필요 포인트]: " + (POINT_GRADE_4 - userPoint);
+                        }
+                        if ((roomGradeDB[room] >= 4 || userPoint >= POINT_GRADE_4)
+                            || (ADMIN_NAME.includes(sender) || MANAGER_NAME.includes(sender))) {
+                            retMsg += "\n\n [4단계 명령어]";
+                            retMsg += "\nN /지식인: 지식인 랜덤검색";
+                            retMsg += "\n🗠 /주식 [종목명]: 주식정보 조회";
+                            retMsg += "\n🪙 /코인 [코인명]: 코인정보 조회";
                         }
                     }
                 }
@@ -2489,7 +2397,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             replier.reply(" 📗 랜덤지식인 🍀\n==========================\n[Q]: " + knowledge[0] + "\n\n[A]: " + knowledge[1]);
                         }
                         else if (msg.startsWith("/주식 ")) {
-                            const code = msg.substring(4).trim();
+                            const companyName = msg.substring(4).trim();
 
                             // 종목 코드가 6자리 숫자인지 간단히 확인
                             if (!/^\d{6}$/.test(code)) {

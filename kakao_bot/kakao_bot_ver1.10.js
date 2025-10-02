@@ -1568,6 +1568,28 @@ function getRandomIN() {
     ];
 }
 
+function getHoroscopeInfo() {
+    const queryString = "targetYear={TARGET_YEAR}&targetMonth={TARGET_MONTH}&targetDay={TARGET_DAY}"
+                        + "&birthYear={BIRTH_YEAR}&birthMonth={BIRTH_MONTH}&birthDay={BIRTH_DAY}&birthHour={BIRTH_HOUR}"
+                        + "&isLunar={IS_LUNAR}"
+                        + "&api-key={API_KEY}";
+    queryString = queryString.replace("{API_KEY}", "943156c8f56a4c88fad1ba1379e3bf00"); //API KEY
+    queryString = queryString.replace("{TARGET_YEAR}", "2016");          //운세를 보고자 하는 날의 년
+    queryString = queryString.replace("{TARGET_MONTH}", "9");			 //운세를 보고자 하는 날의 월
+    queryString = queryString.replace("{TARGET_DAY}", "15");			 //운세를 보고자 하는 날의 일
+    queryString = queryString.replace("{BIRTH_YEAR}", "1980");			 //생년
+    queryString = queryString.replace("{BIRTH_MONTH}", "6");			 //생월
+    queryString = queryString.replace("{BIRTH_DAY}", "30");				 //생일
+    queryString = queryString.replace("{BIRTH_HOUR}", "12");			 //생시
+    queryString = queryString.replace("{IS_LUNAR}", "false");			 //음력 여부, 양력이면 false로 주세요.
+
+    const getHoroscopeUrl = "https://api.un7.kr/api/v1/day";
+    const data = org.jsoup.Jsoup.connect(getHoroscopeUrl + "?" + queryString).get();
+    
+    const result = data;
+    return result;
+}
+
 // ==================== 나무 텍스트 아트 ====================
 // 레벨에 따라 나무의 모습이 변합니다.
 const TREE_ART = [
@@ -2415,7 +2437,9 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             //  }
                         }
                         else if (msg === "/운세") {
-                            replier.reply("모두의 운세");
+                            let resultHoroscope = getHoroscopeInfo();
+                            replier.reply("모두의 운세: " + resultHoroscope);
+                            return;
                         }
                         else if (msg.startsWith("/운세 ")) {
                             const animals = msg.split(" ")[1];

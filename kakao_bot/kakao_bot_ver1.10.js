@@ -456,12 +456,20 @@ function getTodayDateString(chk) {
     else return year + '-' + month + '-' + day;
 }
 // 어제 날짜를 'YYYY-MM-DD' 형식의 문자열로 반환하는 함수
-function getYesterdayDateString() {
+function getYesterdayDateString(chk) {
     const today = new Date();
     const yesterday = new Date(today.setDate(today.getDate() - 1));
     const year = yesterday.getFullYear();
     const month = String(yesterday.getMonth() + 1).padStart(2, '0');
     const day = String(yesterday.getDate()).padStart(2, '0');
+    if (chk == 'kor') return year + '년 ' + month + '월 ' + day + '일';
+    else return year + '-' + month + '-' + day;
+}
+// 20251912. watson. 특정 날짜의 형식을 원하는대로 가져오기
+function getDateString(dDate, chk) {
+    const year = dDate.getFullYear();
+    const month = String(dDate.getMonth() + 1).padStart(2, '0');
+    const day = String(dDate.getDate()).padStart(2, '0');
     if (chk == 'kor') return year + '년 ' + month + '월 ' + day + '일';
     else return year + '-' + month + '-' + day;
 }
@@ -1534,31 +1542,24 @@ const easterEgg = [
 const PROVERB_FILE_PATH = DB_BASE_PATH + "/etc/proverbs.txt";
 let proverbs = null;
 
+// 20251912. watson. 속담 정보 가져오는 기능 개선.
 function loadProverbs() {
     const loadedProverbs = [];
     try {
-        const file = new java.io.File(PROVERB_FILE_PATH);
-        const fis = new java.io.FileInputStream(file);
-        const isr = new java.io.InputStreamReader(fis, java.nio.charset.StandardCharsets.UTF_8);
-        const br = new java.io.BufferedReader(isr);
-
+        const proverb_file = loadDatabase(PROVERB_FILE_PATH);
         let line;
-        while ((line = br.readLine()) !== null) {
+        while ((line = proverb_file.readLine()) !== null) {
             loadedProverbs.push(line.trim());
         }
-
-        br.close();
-        isr.close();
-        fis.close();
-
-        Log.d("속담 " + loadedProverbs.length + "개 로드 완료");
+        Api.replyRoom(ADMIN_NAME.includes(room), "속담 " + loadedProverbs.length + "개 로드 완료", false);
         return loadedProverbs;
     } catch (e) {
-        Log.e("속담 파일 로드 오류: " + e);
+        Api.replyRoom(ADMIN_NAME.includes(room), "속담 파일 로드 오류: " + e, false);
         return null;
     }
 }
 
+// 랜덤 지식인 정보 가져오기
 function getRandomIN() {
     const data = org.jsoup.Jsoup.connect("https://search.naver.com/search.naver?ssc=tab.nx.all&where=nexearch&query=&sm=tab_rnd.another").get().select("div.fds-kin-item-list");
 
@@ -1568,24 +1569,48 @@ function getRandomIN() {
     ];
 }
 
-function getHoroscopeInfo() {
-    const queryString = "targetYear={TARGET_YEAR}&targetMonth={TARGET_MONTH}&targetDay={TARGET_DAY}"
-                        + "&birthYear={BIRTH_YEAR}&birthMonth={BIRTH_MONTH}&birthDay={BIRTH_DAY}&birthHour={BIRTH_HOUR}"
-                        + "&isLunar={IS_LUNAR}"
-                        + "&api-key={API_KEY}";
-    queryString = queryString.replace("{API_KEY}", "943156c8f56a4c88fad1ba1379e3bf00"); //API KEY
-    queryString = queryString.replace("{TARGET_YEAR}", "2016");          //운세를 보고자 하는 날의 년
-    queryString = queryString.replace("{TARGET_MONTH}", "9");			 //운세를 보고자 하는 날의 월
-    queryString = queryString.replace("{TARGET_DAY}", "15");			 //운세를 보고자 하는 날의 일
-    queryString = queryString.replace("{BIRTH_YEAR}", "1980");			 //생년
-    queryString = queryString.replace("{BIRTH_MONTH}", "6");			 //생월
-    queryString = queryString.replace("{BIRTH_DAY}", "30");				 //생일
-    queryString = queryString.replace("{BIRTH_HOUR}", "12");			 //생시
-    queryString = queryString.replace("{IS_LUNAR}", "false");			 //음력 여부, 양력이면 false로 주세요.
+// 20251912. watson. 한국거래소 종목코드 가져오기 개선
+// 챗봇 실행 1회만 API로 가져오게 한 뒤, data를 library 방식으로 담아 조회하는 방식으로 처리하는게 가장 좋을 듯 함
+function getStockInfo(companyName) {
+    try {
+        const stockAPI = "한국거래소API URL";
+        const conn = stockAPI.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");        // Content-Type에 charset=utf-8 추가
+        conn.setDoOutput(true);
+    } catch (e) {
+        replier.reply("한국거래소 API 정보를 가져오던 중 오류가 발생했습니다. 관리자에게 문의해주세요.\n에러: " + e);
+        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 의 한국거래소API에서 에러 발생!\n[내용] " + e, false);
+    }
+}
 
+// 20251912. watson. 오늘의운세 API 정보 가져오는 기능 개선.
+function getHoroscopeInfo(birthDay) {
+    const queryString = "targetYear={TARGET_YEAR}&targetMonth={TARGET_MONTH}&targetDay={TARGET_DAY}"
+                      + "&birthYear={BIRTH_YEAR}&birthMonth={BIRTH_MONTH}&birthDay={BIRTH_DAY}&birthHour={BIRTH_HOUR}"
+                      + "&isLunar={IS_LUNAR}"
+                      + "&api-key={API_KEY}";
+    try {
+        const birthDay = getDateString(birthDay);
+        const HoroscopeDay = getTodayDateString();
+        const splitDate = HoroscopeDay.split("-") + birthDay.split("-");
+
+        queryString = queryString.replace("{API_KEY}", "943156c8f56a4c88fad1ba1379e3bf00"); //API KEY
+        queryString = queryString.replace("{TARGET_YEAR}",  splitDate[0]);   //운세를 보고자 하는 날의 년
+        queryString = queryString.replace("{TARGET_MONTH}", splitDate[1]);	 //운세를 보고자 하는 날의 월
+        queryString = queryString.replace("{TARGET_DAY}",   splitDate[2]);   //운세를 보고자 하는 날의 일
+        queryString = queryString.replace("{BIRTH_YEAR}",   splitDate[3]);   //생년
+        queryString = queryString.replace("{BIRTH_MONTH}",  splitDate[4]);	 //생월
+        queryString = queryString.replace("{BIRTH_DAY}",    splitDate[5]);	 //생일
+        // 시간 및 양음력까지 넣으면 입력 조건이 너무 까다로워짐. 일단 주석처리
+        // queryString = queryString.replace("{BIRTH_HOUR}", "12");			 //생시
+        // queryString = queryString.replace("{IS_LUNAR}", "false");	     //음력 여부, 양력이면 false로 주세요.
+    } catch (e) {
+        replier.reply("오늘의운세 정보를 가져오던 중 오류가 발생했습니다. 관리자에게 문의해주세요.\n에러: " + e);
+        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 의 오늘의운세에서 에러 발생!\n[내용] " + e, false);
+    }
     const getHoroscopeUrl = "https://api.un7.kr/api/v1/day";
     const data = org.jsoup.Jsoup.connect(getHoroscopeUrl + "?" + queryString).get();
-    
     const result = data;
     return result;
 }
@@ -2397,13 +2422,13 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             if (!proverbs) {
                                 proverbs = loadProverbs();
                                 if (!proverbs) {
-                                    msg.reply("⚠️ 속담 목록을 불러오는 데 실패했습니다. 'proverbs.txt' 파일이 있는지 확인해주세요!");
+                                    replier.reply("⚠️ 속담 목록을 불러오는 데 실패했습니다. 'proverbs.txt' 파일이 있는지 확인해주세요!");
                                     return;
                                 }
                             }
 
                             if (proverbs.length === 0) {
-                                msg.reply("⚠️ 속담 파일에 속담이 없습니다. 'proverbs.txt' 파일에 속담을 추가해주세요!");
+                                replier.reply("⚠️ 속담 파일에 속담이 없습니다. 'proverbs.txt' 파일에 속담을 추가해주세요!");
                                 proverbs = null;
                                 return;
                             }
@@ -2411,7 +2436,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             const randomIndex = Math.floor(Math.random() * proverbs.length);
                             const randomProverb = proverbs[randomIndex];
 
-                            msg.reply("📜 오늘의 속담 📜\n\n" + randomProverb);
+                            replier.reply("📜 오늘의 속담 📜 [ " + randomProverb + " ]");
                         }
                         else if (msg === "/지식인") {
                             let knowledge = getRandomIN();
@@ -2420,31 +2445,38 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                         else if (msg.startsWith("/주식 ")) {
                             const companyName = msg.substring(4).trim();
 
-                            // 종목 코드가 6자리 숫자인지 간단히 확인
-                            if (!/^\d{6}$/.test(code)) {
-                                replier.reply("올바른 종목코드(6자리 숫자)를 입력해주세요.\n(예: /주식 005930)");
-                                return;
+                            // // 종목 코드가 6자리 숫자인지 간단히 확인
+                            // // 종목코드로 조회하기엔 비효율적임 -> 한국거래소 정보 읽어서 종목코드 가져오도록 변경(getStockInfo)
+                            // if (!/^\d{6}$/.test(code)) {
+                            //     replier.reply("올바른 종목명을 입력해주세요.\n(예: /주식 삼성전자)");
+                            //     return;
+                            // }
+                            try {
+                                const stockInfo = getStockInfo(code);
+                                replier.reply(companyName + '[' + code + '] 종목 정보를 조회합니다...');
+                            } catch(e) {
+                                replier.reply("종목코드 정보를 가져오는 중 오류가 발생했습니다.\n에러내용: " + e);
                             }
-
-                            replier.reply('[' + code + '] 종목 정보를 조회합니다...');
+                            
 
                             //  try {
-                            const stockInfo = getStockInfo(code);
-                            replier.reply(stockInfo);
                             //  } catch (e) {
                             //      Log.e("주식 정보 조회 오류 (" + code + "): " + e);
                             //      replier.reply("정보를 가져오는 중 오류가 발생했습니다.\n종목코드가 올바른지 확인해주세요.");
                             //  }
                         }
                         else if (msg === "/운세") {
-                            let resultHoroscope = getHoroscopeInfo();
-                            replier.reply("모두의 운세: " + resultHoroscope);
+                            const HoroscopeTxt = "🥠 오늘의 운세 🍀\n[조회일자] " + getTodayDateString('kor');
+                            const resultHoroscope = getHoroscopeInfo();
+
+                            replier.reply(HoroscopeTxt + resultHoroscope);
                             return;
                         }
                         else if (msg.startsWith("/운세 ")) {
-                            const animals = msg.split(" ")[1];
-                            
-                            replier.reply("당신의 운세");
+                            const birthDay = split(" ")[1];
+                            const HoroscopeTxt = "🙋🏻 당신의 운세 🍀\n[생년월일] " + getDateString(birthDay, 'kor') + "\n[조회일자] " + getTodayDateString('kor');
+                            const resultHoroscope = getHoroscopeInfo();
+                            replier.reply(HoroscopeTxt + resultHoroscope);
                         }
                         if ((roomGradeDB[room] >= 5 || userPoint >= POINT_GRADE_5)
                             || (ADMIN_NAME.includes(sender) || MANAGER_NAME.includes(sender))) {

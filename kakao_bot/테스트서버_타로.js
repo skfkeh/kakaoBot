@@ -37,10 +37,11 @@ const Cursor = android.database.Cursor;
 
 // ==================== [SET] 선언부 ====================
 // 1단계에서 발급받은 Gemini API 키
-const GEMINI_API_KEY = "your_api_key";
-const ADMIN_NAME = ["admin"]; // 관리자 계정
-const MANAGER_NAME = ["manager"];
-const ADMIN_HASH = [0000000];
+const GEMINI_API_KEY = "AIzaSyBzt3HzlenXzZZZ_S_lbLV704XWLqr3I64";
+const ADMIN_NAME = ["정승환", "DB가모죠", "공겹방문객", "람대장", "게임이모죠"]; // 관리자 계정
+const MANAGER_NAME = ["박효정", "장지운", "Database/남/db개발", "스리슬쩍", "전산가즈아", "!!m*", "🔨"];
+const ADMIN_HASH = [1610454669];     // 댕
+//, -1959318130 ] // 람
 const MAX_ERROR_COUNT = 5;  // 잘못된 명령어를 입력했을 때, 이스터에그가 발동하기 위한 횟수
 const CHAT_POINT = 1;
 const ATTENDANCE_POINT = 5;
@@ -82,17 +83,18 @@ const SENTENCE_QUIZ = "quiz/sentence.json";
 const CHOSUNG_QUIZ = "quiz/chosung.json";
 const NONSENSE_QUIZ = "quiz/nonsense.json";
 const EMOTION_QUIZ = "quiz/emotion.json";
-const DEFAULT_NICKNAME = "etc/default_nickname.json";
 const TREE_PATH = "etc/tree_data.json";
 
+//let DB = DataBase.getDataBase(DB_BASE_PATH + SQLD_QUIZ);
+
 // SQLite 데이터베이스 초기화
-const SQLITE_DB_PATH = "sdcard/msgbot/database/chatbot.db"; // SQLite DB 파일 경로
+const SQLITE_DB_PATH = DB_BASE_PATH + "chatbot.db"; // SQLite DB 파일 경로
 let sqliteDB = null;
 
 function initSQLiteDB() {
     try {
         sqliteDB = SQLiteDatabase.openOrCreateDatabase(SQLITE_DB_PATH, null);
-
+        
         // 출석 체크 테이블 생성 (hash 기반)
         sqliteDB.execSQL(
             "CREATE TABLE IF NOT EXISTS attendance (" +
@@ -135,6 +137,17 @@ function initSQLiteDB() {
             "CREATE TABLE IF NOT EXISTS room_settings (" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "room TEXT NOT NULL UNIQUE, " +
+            "settings TEXT NOT NULL)"
+        );
+
+        // 방 설정 테이블 생성
+        sqliteDB.execSQL(
+            "CREATE TABLE IF NOT EXISTS quizzes (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "type TEXT NOT NULL UNIQUE, " +
+            "context TEXT NOT NULL UNIQUE, " +
+            "sub_context TEXT, " +
+            "hint TEXT, " +
             "settings TEXT NOT NULL)"
         );
 
@@ -209,60 +222,7 @@ function getUserInfo(userHash, room) {
     }
 }
 
-
-// --- 헬퍼 함수 (대화 기록 관리) ---
-// 대화 기록을 저장할 폴더 이름
-const HISTORY_DIR = DB_BASE_PATH + "ai_history/";
-/**
- * 특정 세션(채팅방)의 대화 기록을 불러오는 함수
- * @param {string} sessionId - 채팅방 이름
- * @returns {Array} 대화 기록 객체 배열
- */
-function getHistory(sessionId) {
-    const fileName = HISTORY_DIR + sessionId + ".json";
-    const fileContent = loadDatabase(fileName);
-    if (fileContent) {
-        try {
-            return JSON.parse(fileContent);
-        } catch (e) {
-            return []; // 파일 내용이 잘못되었으면 초기화
-        }
-    }
-    return []; // 파일이 없으면 빈 배열 반환
-}
-
-/**
- * 방 등급 데이터를 파일에 삭제하는 함수
- * @param {object} db - 삭제할 방 등급 데이터 객체
- */
-function deleteDatabase(path, data) {
-    try {
-        FileStream.remove(path, JSON.stringify(data, null, 2));
-    } catch (e) { Log.e("JSON 삭제 오류 (" + path + "): " + e); }
-}
-
-/**
- * 특정 세션(채팅방)의 대화 기록을 저장하는 함수
- * @param {string} sessionId - 채팅방 이름
- * @param {Array} history - 저장할 대화 기록 객체 배열
- */
-function saveHistory(sessionId, history) {
-    const fileName = HISTORY_DIR + sessionId + ".json";
-    const dataString = JSON.stringify(history, null, 2);
-    saveDatabase(fileName, dataString);
-}
-
-/**
- * 특정 세션(채팅방)의 대화 기록을 삭제하는 함수
- * @param {string} sessionId - 채팅방 이름
- */
-function deleteHistory(sessionId) {
-    const fileName = HISTORY_DIR + sessionId + ".json";
-    //delete ongoingGames[room];
-    deleteDatabase(fileName, dataString);
-}
-
-function saveAttendance(userHash, username, room, date, streak, points) {
+function saveAttendance(userHash, username, room, date, streak, points, replier) {
     try {
         if (!sqliteDB) initSQLiteDB();
 
@@ -277,15 +237,21 @@ function saveAttendance(userHash, username, room, date, streak, points) {
         sqliteDB.insertWithOnConflict("attendance", null, values, SQLiteDatabase.CONFLICT_REPLACE);
         return true;
     } catch (e) {
-        Log.d("saveAttendance", "저장 시도: " + userHash + ", " + username + ", " + room + ", " + date);
         const result = sqliteDB.insertWithOnConflict("attendance", null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        Log.d("saveAttendance", "insert 결과: " + result);
-        // Log.e("출석 정보 저장 중 오류: " + e);
+        resultTxt += "\nsaveAttendance: " + 
+                    "userHash=" + userHash + 
+                    ", username=" + username + 
+                    ", room=" + room + 
+                    ", date=" + date + 
+                    ", streak=" + streak + 
+                    ", points=" + points;
+        replier.reply("insert 결과: " + result + resultTxt);
         return false;
     }
 }
 
-function getAttendance(userHash, room, date) {
+function getAttendance(userHash, room, date, replier) {
+    let test_result = '';
     try {
         if (!sqliteDB) initSQLiteDB();
 
@@ -293,25 +259,44 @@ function getAttendance(userHash, room, date) {
             "SELECT * FROM attendance WHERE user_hash = ? AND room = ? AND date = ?",
             [userHash, room, date]
         );
-
+        test_result += "1. Test 진행 중!!!";
         if (cursor.moveToFirst()) {
             const attendance = {
-                userHash: cursor.getInt(cursor.getColumnIndex("user_hash")),
+                userHash: cursor.getString(cursor.getColumnIndex("user_hash")),
                 username: cursor.getString(cursor.getColumnIndex("username")),
                 room: cursor.getString(cursor.getColumnIndex("room")),
                 date: cursor.getString(cursor.getColumnIndex("date")),
                 streak: cursor.getInt(cursor.getColumnIndex("streak")),
                 points: cursor.getInt(cursor.getColumnIndex("points"))
             };
+
+            replier.reply("쿼리값 확인: userHash=" + userHash + ", room=" + room + ", date=" + date);
+            
             cursor.close();
+            test_result += "2. Test 진행 중!!!: " + attendance.points + " / " + attendance.streak;
+            replier.reply(test_result);
             return attendance;
         }
         cursor.close();
+
+        replier.reply(test_result + "\n커서 테스트: " + cursor);
         return null;
     } catch (e) {
         Log.e("출석 정보 조회 중 오류: " + e);
         return null;
     }
+}
+
+function getDBTest(replier) {
+    const cursor = sqliteDB.rawQuery("SELECT * FROM attendance", []);
+    let allData = "";
+    while (cursor.moveToNext()) {
+        allData += cursor.getString(cursor.getColumnIndex("user_hash")) + " / " +
+                cursor.getString(cursor.getColumnIndex("room")) + " / " +
+                cursor.getString(cursor.getColumnIndex("date")) + "\n";
+    }
+    cursor.close();
+    replier.reply("현재 저장된 데이터 목록:\n" + allData);
 }
 
 function saveChatLog(userHash, username, room, message) {
@@ -447,6 +432,157 @@ function getUserInfoString(userHash, username, room) {
 
 // ==================== [DB] 설정 부분 END ====================
 
+// ==================== [FUNC] 타로 설정 STRT =================
+// var { KakaoApiService, KakaoShareClient } = require('kakaolink');
+
+function Test(room){
+    json = {"link_ver":"4.0","template_id":125446,"template_args":{}}
+    return Kakao.send(room, json, "custom")
+}
+
+const service = KakaoApiService.createService();
+const client = KakaoShareClient.createClient();
+
+const cookies = service.login({
+    signInWithKakaoTalk: true,
+    context: App.getContext()
+}).awaitResult();
+
+client.init('ad1e444c5388b3a190f25fdfe764f693', 'https://i.ibb.co', cookies);
+
+const API_KEY = GEMINI_API_KEY;
+const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
+const KAKAO_TEMPLATE_ID = 1330739;
+
+const TAROT_CARDS = [
+    ["달 (The Moon)", "불확실성, 환상, 직관력을 상징합니다. 숨겨진 위험이나 기회를 나타냅니다.", "https://i.ibb.co/80pS0Gr/Moon.png"],
+    ["정의 (Justice)", "공정함, 진실, 법을 상징합니다. 균형 잡힌 결정과 책임을 나타냅니다.", "https://i.ibb.co/NnqZDCJ/Justice.png"],
+    ["연인 (The Lovers)", "사랑, 조화, 관계를 상징합니다. 중요한 선택과 가치관을 나타냅니다.", "https://i.ibb.co/2FkP79Z/Lovers.png"],
+    ["황제 (The Emperor)", "권위, 구조, 통제를 상징합니다. 리더십과 안정성을 나타냅니다.", "https://i.ibb.co/ThWFvVB/Emperor.png"],
+    ["은둔자 (The Hermit)", "내면의 성찰, 고독, 지혜를 상징합니다. 자기 발견과 안내를 나타냅니다.", "https://i.ibb.co/Jy9sSYB/Hermit.png"],
+    ["힘 (Strength)", "용기, 설득력, 내면의 힘을 상징합니다. 도전을 극복하는 능력을 나타냅니다.", "https://i.ibb.co/myrPwQM/Strength.png"],
+    ["죽음 (Death)", "변화, 종말, 새로운 시작을 상징합니다. 전환과 변형을 나타냅니다.", "https://i.ibb.co/2WFJYBz/Death.png"],
+    ["마법사 (The Magician)", "창의력, 기술, 의지력을 상징합니다. 잠재력의 실현을 나타냅니다.", "https://i.ibb.co/DDsv5Rr/Magician.png"],
+    ["별 (The Star)", "희망, 영감, 평화를 상징합니다. 새로운 가능성과 낙관주의를 나타냅니다.", "https://i.ibb.co/8MQKpFQ/Star.png"],
+    ["탑 (The Tower)", "갑작스러운 변화, 혼란, 계시를 상징합니다. 기존 구조의 붕괴를 나타냅니다.", "https://i.ibb.co/3k2gf3h/Tower.png"],
+    ["황후 (The Empress)", "풍요, 창조성, 모성을 상징합니다. 성장과 번영을 나타냅니다.", "https://i.ibb.co/GdTjYk1/Empress.png"],
+    ["운명의 수레바퀴 (Wheel of Fortune)", "운명, 기회, 변화를 상징합니다. 인생의 주기와 전환점을 나타냅니다.", "https://i.ibb.co/hDddRYc/Wheel-of-Fortune.png"],
+    ["절제 (Temperance)", "균형, 조화, 중용을 상징합니다. 서로 다른 요소들의 통합을 나타냅니다.", "https://i.ibb.co/gTt0kLQ/Temperance.png"],
+    ["세계 (The World)", "완성, 성취, 통합을 상징합니다. 목표 달성과 전체성을 나타냅니다.", "https://i.ibb.co/D4R5L2x/World.png"],
+    ["바보 (The Fool)", "새로운 시작, 순수함, 모험을 상징합니다. 잠재력과 무한한 가능성을 나타냅니다.", "https://i.ibb.co/m5rQ5D5/Fool.png"],
+    ["여사제 (The High Priestess)", "직관, 신비, 잠재의식을 상징합니다. 숨겨진 지식과 내면의 목소리를 나타냅니다.", "https://i.ibb.co/qDMq6q2/High-Priestess.png"],
+    ["심판 (Judgement)", "재생, 각성, 변화를 상징합니다. 새로운 시작과 자기 평가를 나타냅니다.", "https://i.ibb.co/fF6vZnK/Judgement.png"],
+    ["교황 (The Hierophant)", "전통, 신념 체계, 조언을 상징합니다. 정신적 지도와 제도화된 지혜를 나타냅니다.", "https://i.ibb.co/Lp63kB6/Hierophant.png"],
+    ["태양 (The Sun)", "성공, 기쁨, 활력을 상징합니다. 긍정적인 에너지와 명확성을 나타냅니다.", "https://i.ibb.co/mt7qCyD/Sun.png"],
+    ["매달린 사람 (The Hanged Man)", "희생, 새로운 관점, 중단을 상징합니다. 기존 관념에서 벗어나는 것을 나타냅니다.", "https://i.ibb.co/tJNwxY4/Hanged-Man.png"],
+    ["전차 (The Chariot)", "의지력, 결단력, 승리를 상징합니다. 목표 달성과 자기 통제를 나타냅니다.", "https://i.ibb.co/VDKTfRp/Chariot.png"],
+    ["펜타클스의 에이스 (Ace of Pentacles)", "새로운 재정적 기회, 번영의 시작을 상징합니다. 물질적 안정과 성공을 나타냅니다.", "https://i.ibb.co/6FjYpjp/Ace-of-Pentacles.png"],
+    ["컵의 기사 (Knight of Cups)", "로맨스, 창의성, 감성적 모험을 상징합니다. 감정적 지성과 예술적 추구를 나타냅니다.", "https://i.ibb.co/Kw21D9N/Knight-of-Cups.png"],
+    ["지팡이의 여왕 (Queen of Wands)", "자신감, 독립성, 사회성을 상징합니다. 카리스마와 열정적인 리더십을 나타냅니다.", "https://i.ibb.co/4R2SZG6/Queen-of-Wands.png"],
+    ["검의 10 (Ten of Swords)", "끝, 패배, 고통을 상징합니다. 어려움의 절정과 새로운 시작의 필요성을 나타냅니다.", "https://i.ibb.co/cvRGrK6/Ten-of-Swords.png"],
+    ["펜타클스의 3 (Three of Pentacles)", "팀워크, 숙련도, 성취를 상징합니다. 협력과 전문성을 통한 성공을 나타냅니다.", "https://i.ibb.co/YThvgs0/Three-of-Pentacles.png"],
+    ["컵의 6 (Six of Cups)", "향수, 순수함, 과거의 기쁨을 상징합니다. 어린 시절의 추억과 단순한 행복을 나타냅니다.", "https://i.ibb.co/RCkHgfc/Six-of-Cups.png"],
+    ["지팡이의 에이스 (Ace of Wands)", "새로운 시작, 영감, 창조적 잠재력을 상징합니다. 열정과 기회의 불꽃을 나타냅니다.", "https://i.ibb.co/Cn5YCtq/Ace-of-Wands.png"],
+    ["검의 여왕 (Queen of Swords)", "지성, 명확성, 직접성을 상징합니다. 날카로운 통찰력과 독립적 사고를 나타냅니다.", "https://i.ibb.co/GFncZvX/Queen-of-Swords.png"],
+    ["펜타클스의 7 (Seven of Pentacles)", "평가, 인내, 장기 투자를 상징합니다. 노력의 결실과 미래 계획을 나타냅니다.", "https://i.ibb.co/rsVYxQr/Seven-of-Pentacles.png"]
+];
+
+function getTarotInterpretationFromGemini(prompt) {
+    try {
+        const url = new java.net.URL(API_URL);
+        const connection = url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+
+        const requestBody = {
+            contents: [{
+                role: "user",
+                parts: [{
+                    text: prompt
+                }]
+            }],
+            systemInstruction: {
+                role: "system",
+                parts: [{
+                    text: "당신은 경험 많은 타로 전문가입니다. 유저의 언어로 대답해주세요. 마크다운을 사용하지 말고, 각 카드에 대한 개별 해석 후 종합적인 해석을 제공해주세요. 해석은 간결하고 명확하게, 다른 말은 하지 말고 해석 내용만 전달해주세요."
+                }]
+            }
+        };
+
+        const outputStream = connection.getOutputStream();
+        outputStream.write(new java.lang.String(JSON.stringify(requestBody)).getBytes("UTF-8"));
+        outputStream.close();
+
+        const inputStream = connection.getInputStream();
+        const reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream));
+        let response = "";
+        let line;
+        
+        while ((line = reader.readLine()) != null) {
+            response += line;
+        }
+        
+        const jsonResponse = JSON.parse(response);
+        return jsonResponse.candidates[0].content.parts[0].text || "응답이 비어있습니다.";
+    } catch (error) {
+        Log.e("Gemini API 오류: " + error);
+        return "오류가 발생하여 해석을 가져올 수 없습니다: " + error.message;
+    }
+}
+
+function interpretTarotCards(selectedCards, question, name) {
+    let prompt = "다음 타로 카드들을 해석해주세요:\n";
+    selectedCards.forEach(function(card, index) {
+        prompt += (index + 1) + ". " + card[0] + " - " + card[1] + "\n";
+    });
+    
+    if (question) {
+        prompt += '\n질문자의 궁금증: "' + question + '"\n이 질문에 대한 답변도 카드의 해석에 포함해 주세요.';
+    }
+
+    return getTarotInterpretationFromGemini(prompt, name);
+}
+
+function drawTarotCards(msg, cardCount, question) {
+    const shuffled = TAROT_CARDS.slice().sort(function() { 
+        return 0.5 - Math.random();
+    });
+    
+    const selectedCards = shuffled.slice(0, cardCount);
+
+    msg.reply("🔮 선택된 " + cardCount + "장의 카드를 해석 중입니다...");
+    
+    selectedCards.forEach(function(card) {
+        const cardName = card[0];
+        const cardDesc = card[1];
+        const cardImgUrl = card[2];
+        try {
+            client.sendLink(msg.room, {
+                templateId: KAKAO_TEMPLATE_ID,
+                templateArgs: {
+                    title: cardName,
+                    description: cardDesc,
+                    imageUrl: cardImgUrl
+                }
+            }, 'custom');
+        } catch (e) {
+            msg.reply('카카오링크 전송 실패: ' + cardName);
+        }
+    });
+    
+    const interpretation = interpretTarotCards(selectedCards, question);
+
+    const replyMsg = "🔮 타로 카드 해석\n" + "\u200b".repeat(500) +
+                     "\n───────────────\n\n" +
+                     interpretation +
+                     "\n\n───────────────\n" +
+                     "🌙 By Gemini 2.0";
+    msg.reply(replyMsg);
+}
+// ==================== [FUNC] 타로 설정 END =================
+
+
 
 // ==================== [FUNC] 날짜 설정 STRT =================
 // 날짜를 'YYYY-MM-DD' 형식의 문자열로 반환하는 함수
@@ -460,20 +596,12 @@ function getTodayDateString(chk) {
     else return year + '-' + month + '-' + day;
 }
 // 어제 날짜를 'YYYY-MM-DD' 형식의 문자열로 반환하는 함수
-function getYesterdayDateString(chk) {
+function getYesterdayDateString() {
     const today = new Date();
     const yesterday = new Date(today.setDate(today.getDate() - 1));
     const year = yesterday.getFullYear();
     const month = String(yesterday.getMonth() + 1).padStart(2, '0');
     const day = String(yesterday.getDate()).padStart(2, '0');
-    if (chk == 'kor') return year + '년 ' + month + '월 ' + day + '일';
-    else return year + '-' + month + '-' + day;
-}
-// 20251912. watson. 특정 날짜의 형식을 원하는대로 가져오기
-function getDateString(dDate, chk) {
-    const year = dDate.getFullYear();
-    const month = String(dDate.getMonth() + 1).padStart(2, '0');
-    const day = String(dDate.getDate()).padStart(2, '0');
     if (chk == 'kor') return year + '년 ' + month + '월 ' + day + '일';
     else return year + '-' + month + '-' + day;
 }
@@ -712,7 +840,7 @@ function findUserByNickname(userDB, nickname) {
 }
 
 // ==================== 기존 JSON 기반 함수들 (SQLite로 대체됨) ====================
-/*
+
 // 저장된 방 등급 데이터를 불러오는 함수 (SQLite로 대체됨)
 function loadDatabase(dbName) {
     const fileContent = FileStream.read(dbName);
@@ -728,7 +856,7 @@ function loadDatabase(dbName) {
         return {};
     }
 }
-
+/*
 function loadData(path, isArray) { // ★★★ isArray 파라미터 추가 (SQLite로 대체됨)
     try {
         if (FileStream.read(path)) return JSON.parse(FileStream.read(path));
@@ -1096,7 +1224,7 @@ function getUserInfo(room, targetUser) {
         let ChatLogError = "정보를 분석하는 중에 오류가 발생했습니다.\n";
         Log.e("정보 분석 중 오류 발생: " + e);
         replier.reply(ChatLogError + e);
-        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 에서 " + ChatLogError + e, false);
+        Api.replyRoom("정승환", "[" + room + "] 에서 " + ChatLogError + e, false);
     }
 }
 */
@@ -1519,7 +1647,15 @@ function startBigDataGame(room, replier) {
     return;
 }
 
-const defaultName = loadDatabase(DB_BASE_PATH + DEFAULT_NICKNAME);
+const defaultName = [
+    "손흔드는 라이언", "기뻐하는 라이언", "화난 라이언", "좌절하는 라이언", "귀여운 라이언", "운동하는 라이언", "부끄러운 라이언", "부끄러워하는 라이언", "눈물바다에 빠진 라이언", "생각하는 라이언", "하트뿅뿅 라이언", "벌 서는 라이언", "졸린 라이언", "베게를 부비적대는 라이언", "베개를 부비적대는 라이언", "블럭을 무너트리는 라이언", "마이크를 든 라이언"
+    , "양손 엄지척 무지", "부탁하는 무지", "권투하는 무지", "콘이 웃긴 무지", "손을 번쩍 든 무지", "씩씩거리는 무지", "초롱초롱 무지", "피자 먹다 자는 무지", "애교뿜뿜 무지", "돈다발 들고 좋아하는 무지", "파이팅하는 무지", "티비보는 무지", "라이언 붕붕카를 탄 무지", "졸린 무지"
+    , "초롱초롱 어피치", "울고있는 어피치", "째려보는 어피치", "엄지척 어피치", "애교뿜뿜 어피치", "떨고있는 어피치", "하트뽀뽀 어피치", "으쓱으쓱 어피치", "부끄러운 어피치", "눈빛 애교 어피치", "선풍기 바람 쐬는 어피치", "신난 어피치", "음료수 마시는 어피치", "음악듣는 어피치"
+    , "부탁하는 네오", "즐거운 네오", "일하기 싫은 네오", "열심히 일하는 네오", "먹보 네오", "머리 빗는 네오", "불나게 일하는 네오", "뿅뿅 네오", "택배 상자를 든 네오", "불금 네오", "소심한 네오", "말썽쟁이 네오", "츄리닝안경 네오", "아이스크림 든 네오", "초롱초롱 네오"
+    , "엄지척 프로도", "신나는 프로도", "단호한 프로도", "아이디어 프로도", "인사하는 프로도", "피스메이커 프로도", "휘파람 프로도", "옐로카드 프로도", "경례하는 프로도", "멋쟁이 프로도", "쑥스럽게 인사하는 프로도", "건배하는 프로도", "퇴근하는 프로도", "궁시렁 프로도"
+    , "인사하는 제이지", "눈물 흘리는 제이지", "치맥하는 제이지", "좌절하는 제이지", "건방진 제이지", "울고있는 제이지", "빈털터리 제이지", "엄지척 제이지", "얼굴마사지하는 제이지", "리듬타는 제이지", "힙합맨 제이지", "라면먹는 제이지", "배불뚝 제이지"
+    , "응원하는 튜브", "기타치는 튜브", "화난 튜브", "튜브낀 튜브", "불 뿜는 튜브", "호호 부는 튜브", "멋쩍은 튜브", "엄지척 튜브", "초롱초롱 튜브", "벙찐 튜브", "청소하는 튜브", "화나서 방방 뛰는 튜브", "비옷입은 튜브", "시무룩한 튜브"
+];
 
 const easterEgg = [
     'Q: AI는 왜 화장실에 안 갈까요 ?\nA: 기억 누설이 걱정돼서요🤖😭',
@@ -1538,78 +1674,134 @@ const easterEgg = [
 const PROVERB_FILE_PATH = DB_BASE_PATH + "/etc/proverbs.txt";
 let proverbs = null;
 
-// 20251912. watson. 속담 정보 가져오는 기능 개선.
 function loadProverbs() {
     const loadedProverbs = [];
     try {
-        const proverb_file = loadDatabase(PROVERB_FILE_PATH);
+        const file = new java.io.File(PROVERB_FILE_PATH);
+        const fis = new java.io.FileInputStream(file);
+        const isr = new java.io.InputStreamReader(fis, java.nio.charset.StandardCharsets.UTF_8);
+        const br = new java.io.BufferedReader(isr);
+
         let line;
-        while ((line = proverb_file.readLine()) !== null) {
+        while ((line = br.readLine()) !== null) {
             loadedProverbs.push(line.trim());
         }
-        Api.replyRoom(ADMIN_NAME.includes(room), "속담 " + loadedProverbs.length + "개 로드 완료", false);
+
+        br.close();
+        isr.close();
+        fis.close();
+
+        Log.d("속담 " + loadedProverbs.length + "개 로드 완료");
         return loadedProverbs;
     } catch (e) {
-        Api.replyRoom(ADMIN_NAME.includes(room), "속담 파일 로드 오류: " + e, false);
+        Log.e("속담 파일 로드 오류: " + e);
         return null;
     }
 }
 
-// 랜덤 지식인 정보 가져오기
 function getRandomIN() {
-    const data = org.jsoup.Jsoup.connect("https://search.naver.com/search.naver?ssc=tab.nx.all&where=nexearch&query=&sm=tab_rnd.another").get().select("div.fds-kin-item-list");
+    const data = org.jsoup.Jsoup.connect("https://search.naver.com/search.naver?ssc=tab.nx.all&where=nexearch&query=&sm=tab_rnd.another").get().select("div.kin_wrap");
 
     return [
-        data.select("div.sds-comps-base-layout.sds-comps-full-layout.J54mgZ4FBiMyhCFEVGZ1 > a > span").text() + "\n  ↳ " + data.select("div > div.sds-comps-vertical-layout.sds-comps-full-layout.WzcnUr1GdAXuQloWxiVe > a > span").text(),
-        data.select("div > div.sds-comps-vertical-layout.sds-comps-full-layout.dinIcu15dorjuwuLiZx3 > div > a > span").text()
+        data.select("div.question_txt").text(),
+        data.select("div.answer_area").text()
     ];
 }
 
-// 20251912. watson. 한국거래소 종목코드 가져오기 개선
-// 챗봇 실행 1회만 API로 가져오게 한 뒤, data를 library 방식으로 담아 조회하는 방식으로 처리하는게 가장 좋을 듯 함
-function getStockInfo(companyName) {
-    try {
-        const stockAPI = "한국거래소API URL";
-        const conn = stockAPI.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");        // Content-Type에 charset=utf-8 추가
-        conn.setDoOutput(true);
-    } catch (e) {
-        replier.reply("한국거래소 API 정보를 가져오던 중 오류가 발생했습니다. 관리자에게 문의해주세요.\n에러: " + e);
-        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 의 한국거래소API에서 에러 발생!\n[내용] " + e, false);
-    }
-}
+/**
+ * 네이버 증권에서 종목 정보를 크롤링하는 메인 함수
+ * @param {string} code - 종목코드 6자리
+ * @returns {string} - 채팅으로 보낼 포맷된 결과 문자열
+ */
+function getStockInfo(code) {
+    const url = "https://finance.naver.com/item/main.nhn?code=" + code;
+    let doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
 
-// 20251912. watson. 오늘의운세 API 정보 가져오는 기능 개선.
-function getHoroscopeInfo(birthDay) {
-    const queryString = "targetYear={TARGET_YEAR}&targetMonth={TARGET_MONTH}&targetDay={TARGET_DAY}"
-                      + "&birthYear={BIRTH_YEAR}&birthMonth={BIRTH_MONTH}&birthDay={BIRTH_DAY}&birthHour={BIRTH_HOUR}"
-                      + "&isLunar={IS_LUNAR}"
-                      + "&api-key={API_KEY}";
-    try {
-        const birthDay = getDateString(birthDay);
-        const HoroscopeDay = getTodayDateString();
-        const splitDate = HoroscopeDay.split("-") + birthDay.split("-");
+    // --- 3. 데이터 추출 ---
+    const companyName = doc.selectFirst("div.wrap_company > h2 > a").text();
 
-        queryString = queryString.replace("{API_KEY}", "943156c8f56a4c88fad1ba1379e3bf00"); //API KEY
-        queryString = queryString.replace("{TARGET_YEAR}",  splitDate[0]);   //운세를 보고자 하는 날의 년
-        queryString = queryString.replace("{TARGET_MONTH}", splitDate[1]);	 //운세를 보고자 하는 날의 월
-        queryString = queryString.replace("{TARGET_DAY}",   splitDate[2]);   //운세를 보고자 하는 날의 일
-        queryString = queryString.replace("{BIRTH_YEAR}",   splitDate[3]);   //생년
-        queryString = queryString.replace("{BIRTH_MONTH}",  splitDate[4]);	 //생월
-        queryString = queryString.replace("{BIRTH_DAY}",    splitDate[5]);	 //생일
-        // 시간 및 양음력까지 넣으면 입력 조건이 너무 까다로워짐. 일단 주석처리
-        // queryString = queryString.replace("{BIRTH_HOUR}", "12");			 //생시
-        // queryString = queryString.replace("{IS_LUNAR}", "false");	     //음력 여부, 양력이면 false로 주세요.
+    // 현재가 (상승/하락/보합에 따라 클래스가 바뀌므로 여러 경우를 모두 시도)
+    let currentPrice = "N/A";
+    try {
+        currentPrice = doc.selectFirst("p.no_today").text().split(" ")[0];
     } catch (e) {
-        replier.reply("오늘의운세 정보를 가져오던 중 오류가 발생했습니다. 관리자에게 문의해주세요.\n에러: " + e);
-        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 의 오늘의운세에서 에러 발생!\n[내용] " + e, false);
+        currentPrice = "N/A";
     }
-    const getHoroscopeUrl = "https://api.un7.kr/api/v1/day";
-    const data = org.jsoup.Jsoup.connect(getHoroscopeUrl + "?" + queryString).get();
-    const result = data;
+
+    // 52주 최고가
+    let high52week = "N/A";
+    try {
+        high52week = doc.select("div.tab_con1 table.tbl_invest em").get(2).text();
+    } catch (e) { }
+
+    // 시가총액
+    let marketCapRaw = doc.selectFirst("#_market_sum").text().replace(/,/g, '');
+    let marketCap = marketCapRaw.replace("조", "조 "); // "123조4567" -> "123조 4567"
+
+    // 재무정보 테이블
+    const financeTable = doc.selectFirst("div.section.cop_analysis table > tbody");
+    let financials = { a: [], b: [], c: [], f: [] }; // 매출액, 영업이익, 당기순이익, 부채비율
+
+    try {
+        const rows = financeTable.select("tr");
+        for (let i = 0; i < 3; i++) {
+            financials.a.push(rows.get(0).select("td").get(i).text().replace(/,/g, '') || 'N/A');
+            financials.b.push(rows.get(1).select("td").get(i).text().replace(/,/g, '') || 'N/A');
+            financials.c.push(rows.get(2).select("td").get(i).text().replace(/,/g, '') || 'N/A');
+            financials.f.push(rows.get(6).select("td").get(i).text().replace(/,/g, '') || 'N/A');
+        }
+    } catch (e) { }
+
+    // --- 4. 데이터 가공 및 분석 ---
+
+    // 최고가 대비 현재가 비율
+    let highRatio = "N/A";
+    try {
+        const current = parseFloat(currentPrice.replace(/,/g, ''));
+        const high = parseFloat(high52week.replace(/,/g, ''));
+        if (!isNaN(current) && !isNaN(high) && high > 0) {
+            highRatio = Math.round(current / high * 100) + "%";
+        }
+    } catch (e) { }
+
+    // 재무제표 건전성 체크
+    let financialHealth = "O";
+    let chkVal = 0;
+
+    //[...financials.a, ...financials.b, ...financials.c].forEach(val => {
+    //    if (val === 'N/A' || val === '' || val === '-') chkVal++;
+    //    else if (parseInt(val, 10) <= 0) chkVal++;
+    //});
+
+    //financials.f.forEach(val => {
+    //    if (val === 'N/A' || val === '' || val === '-') return; // 부채비율은 없으면 체크 안함
+    //    else if (parseFloat(val) > 200.0) chkVal++;
+    //});
+
+    if (chkVal > 0) financialHealth = "X";
+
+    // 특이사항 (Python의 check_capital_changes 함수 대체)
+    const specialNote = "확인필요 (별도 공시 확인)";
+
+    // --- 5. 최종 결과 문자열 생성 ---
+    let result = '📈 [' + companyName + '](' + code + ') 주식 정보\n';
+    result += "────────────────────\n";
+    result += '현재가: ' + currentPrice + '원\n';
+    result += '52주 최고가: ' + high52week + '원\n';
+    result += '최고가 대비: ' + highRatio + '\n';
+    result += '시가총액: ' + marketCap + '억원\n';
+    result += '\n📊 [최근 재무 요약]\n';
+    result += '매출액: ' + financials.a.join(' / ') + ' 억원\n';
+    result += '영업이익: ' + financials.b.join(' / ') + ' 억원\n';
+    result += '당기순이익: ' + financials.c.join(' / ') + ' 억원\n';
+    result += '부채비율: ' + financials.f.join(' / ') + '%\n';
+    result += '\n💡 [간편 분석]\n';
+    //result += '재무 건전성: ' + financialHealth + '\n';
+    result += '특이사항: ' + specialNote;
+
     return result;
 }
+
 
 // ==================== 나무 텍스트 아트 ====================
 // 레벨에 따라 나무의 모습이 변합니다.
@@ -1756,16 +1948,16 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
 
     // 파일 이름을 방마다 고유하게 생성 (데이터 분리의 핵심)
     const safeRoomName = escapeJsonString(room);
-    const attendanceDB = safeRoomName + "_attendance.txt";  // 출석체크 DB
-    const scheduleDB = safeRoomName + "_schedules.txt";     // 일정관리 DB
-    const DELIMITER = ";"; // 데이터 구분자
+    // const attendanceDB = safeRoomName + "_attendance.txt";  // 출석체크 DB
+    // const scheduleDB = safeRoomName + "_schedules.txt";     // 일정관리 DB
+    // const DELIMITER = ";"; // 데이터 구분자
     const LOG_FILE_PATH = DB_BASE_PATH + "chatlog/" + safeRoomName + MSG_DB;
     const userHash = imageDB.getProfileHash(); // 사용자의 해시값 가져오기
     // let chatLogDB = loadDatabase(DB_BASE_PATH + escapeJsonString(room) + "_" + MSG_DB); // SQLite로 대체됨
 
     if (ADMIN_NAME.includes(sender) && ADMIN_NAME.includes(room)) {
         if (ADMIN_HASH.includes(userHash)) {
-            //replier.reply('개발서버입니다.\nHashCode: ' + userHash);
+            replier.reply('개발서버입니다.\nHashCode: ' + userHash);
         }
         //return;
     }
@@ -1792,11 +1984,11 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
     let roomGradeIssue = "🚫 해당 방은 아직 등록되지 않았습니다.";
     if ((roomCount < 1 || gradeDB[room] < 1) && isGroupChat) {
         replier.reply(roomGradeIssue + "\n관리자에게 문의 후 사용해주세요.");
-        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] " + roomGradeIssue, false);
+        Api.replyRoom("정승환", "[" + room + "] " + roomGradeIssue, false);
         return;
     } else if ((roomCount < 1 || gradeDB[room] < 1) && !isGroupChat) {
         replier.reply(roomGradeIssue + "\n메세지 확인 후 피드백 드리겠습니다.");
-        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] " + roomGradeIssue, false);
+        Api.replyRoom("정승환", "[" + room + "] " + roomGradeIssue, false);
         return;
     }
 
@@ -1857,17 +2049,6 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             retMsg += "\n⚐ /포기    : 랜덤게임 포기";
                         } else {
                             retMsg += "\n🅱 /빅    : 빅분기문제 실행";
-                        }
-                        if ((userPoint < POINT_GRADE_4 && roomGradeDB[room] < 4)
-                            || (!ADMIN_NAME.includes(sender) || !MANAGER_NAME.includes(sender))) {
-                            retMsg += "\n\n[다음 단계 필요 포인트]: " + (POINT_GRADE_4 - userPoint);
-                        }
-                        if ((roomGradeDB[room] >= 4 || userPoint >= POINT_GRADE_4)
-                            || (ADMIN_NAME.includes(sender) || MANAGER_NAME.includes(sender))) {
-                            retMsg += "\n\n [4단계 명령어]";
-                            retMsg += "\nN /지식인: 지식인 랜덤검색";
-                            retMsg += "\n🗠 /주식 [종목명]: 주식정보 조회";
-                            retMsg += "\n🪙 /코인 [코인명]: 코인정보 조회";
                         }
                     }
                 }
@@ -1931,7 +2112,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
             // ==================== 출석체크 관련 함수 (hash 기반 SQLite) =================== ##7
             else if ((msg === "/ㅊㅊ") || (msg === "/출첵")) {
                 const today = getTodayDateString();
-
+                
                 // 1. 기존 출석 기록 확인
                 const existingAttendance = getAttendance(userHash, room, today);
                 if (existingAttendance) {
@@ -1941,7 +2122,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
 
                 // 2. 어제 출석 기록 확인하여 연속일 계산
                 const yesterday = getYesterdayDateString();
-                const yesterdayAttendance = getAttendance(userHash, room, yesterday);
+                const yesterdayAttendance = getAttendance(userHash, room, yesterday, replier);
 
                 let currentStreak = 1;
                 if (yesterdayAttendance) {
@@ -1957,15 +2138,15 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                     pointsGained += STREAK_BONUS_POINT;
                     streakChk = true;
                 }
-
+                
                 // 4. 출석 정보 저장
-                saveAttendance(userHash, sender, room, today, currentStreak, pointsGained);
-
+                saveAttendance(userHash, sender, room, today, currentStreak, pointsGained, replier);
+                
                 // 5. 사용자 전체 포인트 업데이트
                 //const currentUser = getUserInfo(userHash, room);
                 const newTotalPoints = (currentUser ? currentUser.points : 0) + pointsGained;
                 saveUserInfo(userHash, sender, room, newTotalPoints, currentUser ? currentUser.chatCount : 0);
-
+                
                 // 6. 결과 메시지 전송
                 let replyMessage = '✅ ' + sender + '님, ' + currentStreak + '일째 출석체크!\n';
                 replyMessage += '- 현재 포인트: ' + newTotalPoints + '점 (+' + pointsGained + ' p)';
@@ -1973,7 +2154,8 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                 if (streakChk) {
                     replyMessage += '\n🎉 ' + STREAK_BONUS_DAYS + '일 연속 출석 보너스 +' + STREAK_BONUS_POINT + '점!';
                 }
-
+                getDBTest(replier);
+                
                 replier.reply(replyMessage);
             }
             else if (msg === "/나무") {
@@ -2138,7 +2320,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                         let ChatLogError = "채팅 순위를 분석하는 중에 오류가 발생했습니다.\n";
                         Log.e("채팅 순위 분석 중 오류 발생: " + e);
                         replier.reply(ChatLogError + e);
-                        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 에서 " + ChatLogError + e, false);
+                        Api.replyRoom("정승환", "[" + room + "] 에서 " + ChatLogError + e, false);
                     }
                 }
                 if ((roomGradeDB[room] >= 3 || userPoint >= POINT_GRADE_3)
@@ -2370,19 +2552,18 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                                 replier.reply("맛집을 검색하는 중 오류가 발생했습니다.\n" + e);
                             }
                         }
-                        else if (msg === "/자게" || msg === "/유머") {
+                        else if (msg === "/뽐뿌" || msg === "/알리") {
                             // 명령어별 설정 정의
-                            
                             let configs = {
-                                "/유머": {
-                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=humor",
+                                "/알리": {
+                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=ppomppu8",
                                     skip: 3,
-                                    title: "유머게시판 상위 10개 게시글"
+                                    title: "알리뽐뿌 상위 10개 게시글"
                                 },
-                                "/자게": {
-                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=freeboard",
+                                "/뽐뿌": {
+                                    url: "https://www.ppomppu.co.kr/zboard/zboard.php?id=ppomppu",
                                     skip: 2,
-                                    title: "자유게시판 상위 10개 게시글"
+                                    title: "뽐뿌 상위 10개 게시글"
                                 }
                             };
 
@@ -2407,24 +2588,26 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
 
                                 result.push(displayNumber + ". " + title + "\n" + link);
                             }
-                            
+
+                            replier.reply(result);
+                            return;
                             if (result.length > 0) {
-                                replier.reply(config.title + "\n\n" + result.join("\n\n"));
+                                msg.reply(config.title + "\n\n" + result.join("\n\n"));
                             } else {
-                                replier.reply("❌ 게시글을 찾지 못했습니다.");
+                                msg.reply("❌ 게시글을 찾지 못했습니다.");
                             }
                         }
                         else if (msg === "/속담") {
                             if (!proverbs) {
                                 proverbs = loadProverbs();
                                 if (!proverbs) {
-                                    replier.reply("⚠️ 속담 목록을 불러오는 데 실패했습니다. 'proverbs.txt' 파일이 있는지 확인해주세요!");
+                                    msg.reply("⚠️ 속담 목록을 불러오는 데 실패했습니다. 'proverbs.txt' 파일이 있는지 확인해주세요!");
                                     return;
                                 }
                             }
 
                             if (proverbs.length === 0) {
-                                replier.reply("⚠️ 속담 파일에 속담이 없습니다. 'proverbs.txt' 파일에 속담을 추가해주세요!");
+                                msg.reply("⚠️ 속담 파일에 속담이 없습니다. 'proverbs.txt' 파일에 속담을 추가해주세요!");
                                 proverbs = null;
                                 return;
                             }
@@ -2432,130 +2615,35 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             const randomIndex = Math.floor(Math.random() * proverbs.length);
                             const randomProverb = proverbs[randomIndex];
 
-                            replier.reply("📜 오늘의 속담 📜 [ " + randomProverb + " ]");
+                            msg.reply("📜 오늘의 속담 📜\n\n" + randomProverb);
                         }
                         else if (msg === "/지식인") {
                             let knowledge = getRandomIN();
-                            replier.reply(" 📗 랜덤지식인 🍀\n==========================\n[Q]: " + knowledge[0] + "\n\n[A]: " + knowledge[1]);
+                            replier.reply(" ** 랜덤지식인 **\n===========================\n[Q]: " + knowledge[0] + "\n\n[A]: " + knowledge[1]);
                         }
                         else if (msg.startsWith("/주식 ")) {
-                            const companyName = msg.substring(4).trim();
+                            const code = msg.substring(4).trim();
 
-                            // // 종목 코드가 6자리 숫자인지 간단히 확인
-                            // // 종목코드로 조회하기엔 비효율적임 -> 한국거래소 정보 읽어서 종목코드 가져오도록 변경(getStockInfo)
-                            // if (!/^\d{6}$/.test(code)) {
-                            //     replier.reply("올바른 종목명을 입력해주세요.\n(예: /주식 삼성전자)");
-                            //     return;
-                            // }
-                            try {
-                                const stockInfo = getStockInfo(code);
-                                replier.reply(companyName + '[' + code + '] 종목 정보를 조회합니다...');
-                            } catch(e) {
-                                replier.reply("종목코드 정보를 가져오는 중 오류가 발생했습니다.\n에러내용: " + e);
+                            // 종목 코드가 6자리 숫자인지 간단히 확인
+                            if (!/^\d{6}$/.test(code)) {
+                                replier.reply("올바른 종목코드(6자리 숫자)를 입력해주세요.\n(예: /주식 005930)");
+                                return;
                             }
-                            
+
+                            replier.reply('[' + code + '] 종목 정보를 조회합니다...');
 
                             //  try {
+                            const stockInfo = getStockInfo(code);
+                            replier.reply(stockInfo);
                             //  } catch (e) {
                             //      Log.e("주식 정보 조회 오류 (" + code + "): " + e);
                             //      replier.reply("정보를 가져오는 중 오류가 발생했습니다.\n종목코드가 올바른지 확인해주세요.");
                             //  }
                         }
-                        else if (msg === "/운세") {
-                            const HoroscopeTxt = "🥠 오늘의 운세 🍀\n[조회일자] " + getTodayDateString('kor');
-                            const resultHoroscope = getHoroscopeInfo();
-
-                            replier.reply(HoroscopeTxt + resultHoroscope);
-                            return;
-                        }
-                        else if (msg.startsWith("/운세 ")) {
-                            const birthDay = split(" ")[1];
-                            const HoroscopeTxt = "🙋🏻 당신의 운세 🍀\n[생년월일] " + getDateString(birthDay, 'kor') + "\n[조회일자] " + getTodayDateString('kor');
-                            const resultHoroscope = getHoroscopeInfo();
-                            replier.reply(HoroscopeTxt + resultHoroscope);
-                        }
-                        if ((roomGradeDB[room] >= 5 || userPoint >= POINT_GRADE_5)
-                            || (ADMIN_NAME.includes(sender) || MANAGER_NAME.includes(sender))) {
-                            // 1. 대화 종료 명령어 처리
-                            if (msg === "/대화종료") {
-                                const sessionId = room; // 채팅방 이름으로 세션 구분
-                                deleteHistory(sessionId);
-                                replier.reply("AI와의 대화를 종료하고 이전 기록을 모두 삭제했습니다. 👋\n새로운 대화를 시작하시려면 '/대화'를 이용해주세요.");
-                                return;
-                            }
-
-                            // 2. 대화 시작/진행 명령어 처리
-                            if (msg.startsWith("/대화 ")) {
-                                const sessionId = room;
-                                const userQuery = msg.substring(4).trim();
-
-                                if (userQuery === "") {
-                                    replier.reply("⚠️ 대화할 내용을 입력해주세요.\n(예: /대화 오늘 날씨 어때?)");
-                                    return;
-                                }
-
-                                try {
-                                    // 이전 대화 기록 불러오기
-                                    let history = getHistory(sessionId);
-
-                                    // AI에게 역할을 부여하고, 종료 시그널을 보내도록 시스템 메시지 추가 (첫 대화일 때만)
-                                    if (history.length === 0) {
-                                        history.push({
-                                            "role": "user",
-                                            "parts": [{ "text": "지금부터 너는 친절한 AI 비서야. 그리고 대화의 주제가 마무리되거나 끝나는 분위기라고 판단되면, 너의 답변 마지막에 [대화종료] 라는 특수 태그를 반드시 포함해줘." }]
-                                        }, {
-                                            "role": "model",
-                                            "parts": [{ "text": "알겠습니다. 지금부터 사용자의 질문에 친절하게 답변하는 AI 비서 역할을 수행하겠습니다. 대화가 마무리되면 안내해드리겠습니다." }]
-                                        });
-                                    }
-
-                                    // 현재 사용자의 질문을 기록에 추가
-                                    history.push({
-                                        "role": "user",
-                                        "parts": [{ "text": userQuery }]
-                                    });
-
-                                    // API에 보낼 요청 본문 생성 (전체 대화 기록 포함)
-                                    const requestBody = JSON.stringify({ "contents": history });
-
-                                    // API 요청
-                                    const responseData = Utils.parse(API_URL)
-                                        .method("POST")
-                                        .header("Content-Type", "application/json")
-                                        .body(requestBody)
-                                        .get();
-
-                                    if (responseData) {
-                                        const jsonResponse = JSON.parse(responseData);
-                                        let answer = jsonResponse.candidates[0].content.parts[0].text;
-
-                                        // AI의 답변을 대화 기록에 추가
-                                        history.push({
-                                            "role": "model",
-                                            "parts": [{ "text": answer }]
-                                        });
-
-                                        // 업데이트된 대화 기록 저장
-                                        saveHistory(sessionId, history);
-
-                                        // 맥락적 종료 유도 확인
-                                        if (answer.includes("[대화종료]")) {
-                                            // [대화종료] 태그는 사용자에게 보여주지 않도록 제거
-                                            answer = answer.replace("[대화종료]", "").trim();
-                                            replier.reply(answer + "\n\n(대화가 마무리된 것 같네요! '/대화종료'를 입력해 대화를 마칠 수 있습니다.)");
-                                        } else {
-                                            replier.reply(answer);
-                                        }
-
-                                    } else {
-                                        replier.reply("API 응답이 없습니다. 잠시 후 다시 시도해주세요.");
-                                    }
-
-                                } catch (e) {
-                                    Log.e("Gemini API(memory) 호출 중 오류 발생: " + e);
-                                    replier.reply("죄송합니다. 챗봇과 대화 중 오류가 발생했어요. 😥\n'/대화종료'로 초기화 후 다시 시도해보세요.");
-                                }
-                            }
+                        else if (msg === '/ㄷㅂ') {
+                            chatdata = sqliteDB.rawQuery("SELECT * FROM chat_logs", null);
+                            chatdata.moveToLast();
+                            replier.reply(chatdata.getString(4));
                         }
                     }
                 }
@@ -2685,6 +2773,15 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
             }
 
         }
+        else if (msg === "!타로") {
+            replier.reply('test taro !!!');
+            Test(room); //drawTarotCards(msg, 2, null);
+            replier.reply('test taro @@@');
+        }
+        // else if (msg.content.startsWith("!타로 ")) {
+        //     const question = msg.content.substring(4).trim();
+        //     drawTarotCards(msg, 3, question);
+        // }
         else {
             if (msg.startsWith("굿모닝")) {
                 let morningTxt = "🌞 좋은 아침입니다! ☺️\n오늘도 좋은 일만 가득하시길 빌겠습니다. :)";
@@ -2710,7 +2807,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
     }
     catch (e) {
         replier.reply(e);
-        Api.replyRoom(ADMIN_NAME.includes(room), "[" + room + "] 에서 " + ChatLogError + e, false);
+        Api.replyRoom("정승환", "[" + room + "] 에서 에러 발생!!\n" + e, false);
     }
 }
 

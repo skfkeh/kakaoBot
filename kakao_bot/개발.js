@@ -292,18 +292,72 @@ function saveChatLog(userHash, username, room, message) {
 }
 
 // 추가 유용한 함수들
+// function updateUserPoints(userHash, room, points) {
+//     try {
+//         if (!sqliteDB || !sqliteDB.isOpen()) initSQLiteDB();
+
+//         // 안전한 형 변환
+//         const pts = parseInt(points || 0);
+
+//         const values = new ContentValues();
+//         values.put("points", new java.lang.Integer(pts));
+//         values.put("last_activity", String(new Date().toISOString()));
+
+//         // whereArgs를 Java String[]로 변환 (Rhino에서 중요) -> 안먹는다
+//         const whereArgs = [String(userHash), String(room)];
+
+//         // 디버그: ContentValues 크기 로깅
+//         Log.d("updateUserPoints", "ContentValues size: " + values.size() + ", whereArgs: " + whereArgs.length);
+
+//         const result = sqliteDB.update("users", values, "user_hash = ? AND room = ?", whereArgs);
+
+//         Log.d("updateUserPoints", "update result(rowsAffected) = " + result);
+
+//         // 만약 업데이트된 행이 없다면(=사용자 레코드 없음) insert 처리 고려
+//         if (result <= 0) {
+//             Log.d("updateUserPoints", "업데이트된 행 없음 — 사용자가 없을 수 있습니다. upsert 시도.");
+//             // upsert(없으면 삽입) 예시:
+//             const cvInsert = new ContentValues();
+//             cvInsert.put("user_hash", String(userHash));
+//             cvInsert.put("username", ""); // 실제 username을 알고 있다면 넣으세요
+//             cvInsert.put("room", String(room));
+//             cvInsert.put("points", new java.lang.Integer(pts));
+//             cvInsert.put("chat_count", new java.lang.Integer(0));
+//             cvInsert.put("last_activity", String(new Date().toISOString()));
+
+//             const insertResult = sqliteDB.insertWithOnConflict(
+//                 "users",
+//                 null,
+//                 cvInsert,
+//                 SQLiteDatabase.CONFLICT_IGNORE
+//             );
+//             Log.d("updateUserPoints", "insertResult = " + insertResult);
+//             return insertResult !== -1;
+//         }
+
+//         return result > 0;
+//     } catch (e) {
+//         Api.replyRoom(ADMIN_NAME, "[" + room + "] 사용자 포인트 업데이트 중 오류: " + e, false);
+//         return false;
+//     }
+// }
 function updateUserPoints(userHash, room, points) {
     try {
         if (!sqliteDB) initSQLiteDB();
 
-        const values = new ContentValues();
-        values.put("points", points);
-        values.put("last_activity", new Date().toISOString());
+        // const values = new ContentValues();
+        // values.put("points", new java.lang.Integer(pts));
+        // values.put("last_activity", new Date().toISOString());
 
-        const result = sqliteDB.update("users", values, "user_hash = ? AND room = ?", [userHash, room]);
-        return result > 0;
+        const args = [String(points), Date().toISOString(), String(userHash), String(room)];
+
+
+        // const result = sqliteDB.update("users", values, "user_hash = ? AND room = ?", [userHash, room]);
+        const sql = "UPDATE users SET points = points + ?, last_activity = ? WHERE user_hash = ? AND room = ?";
+        sqliteDB.execSQL(sql, args);
+        return true;
     } catch (e) {
-        Log.e("사용자 포인트 업데이트 중 오류: " + e);
+        Api.replyRoom(ADMIN_NAME, "[" + room + "] 사용자 포인트 업데이트 중 오류: " + e, false);
         return false;
     }
 }
@@ -2091,8 +2145,8 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                         let roomSetting = [];
                         if (room.includes("sqld")) {
                             roomSetting = [0.95, 0, 0.96, 0.97, 0, 0, 0.98, 0.99];
-                        } else if (ADMIN_HASH.includes(userHash)) {
-                            roomSetting = [0, 1, 0, 0, 0, 0, 0, 0];
+                        // } else if (ADMIN_HASH.includes(userHash)) {
+                        //     roomSetting = [0, 1, 0, 0, 0, 0, 0, 0];
                         } else {
                             roomSetting = [0, 0, 0.2, 0.35, 0.4, 0.45, 0.6, 0.8];
                         }
@@ -2493,7 +2547,11 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
             // 정답을 맞혔을 경우 공통 처리
             if (correct) {
                 score = game.type === 'sqld' ? S_GAME_POINT : GAME_POINT;
-                result_cont += '\n(획득 포인트 +' + score + ', 현재: ' + setUserPoint(room, sender, score) + '점)';
+                updateUserPoints(userHash, room, score);
+
+                let userInfo = getUserInfo(userHash, room, replier);
+                result_cont += '\n(획득 포인트 +' + score + ', 현재: ' + userInfo.points + '점)';
+                
                 replier.reply(result_cont);
                 if (game.type === "bigData") replier.reply('[설명]\n' + game.hint);
                 delete ongoingGames[room]; // 게임 종료

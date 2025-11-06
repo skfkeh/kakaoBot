@@ -37,10 +37,10 @@ const Cursor = android.database.Cursor;
 
 // ==================== [SET] 선언부 ====================
 // 1단계에서 발급받은 Gemini API 키
-const GEMINI_API_KEY = "AIzaSyBzt3HzlenXzZZZ_S_lbLV704XWLqr3I64";
-const ADMIN_NAME = "정승환"; // 관리자 계정
-const MANAGER_NAME = ["박효정", "장지운", "Database/남/db개발", "스리슬쩍", "전산가즈아", "!!m*", "🔨"];
-const ADMIN_HASH = [1610454669];     // 댕
+const GEMINI_API_KEY = "your_api_key";
+const ADMIN_NAME = "admin_name"; // 관리자 계정
+const MANAGER_NAME = [""];
+const ADMIN_HASH = [0000000];     // 댕
 //, -1959318130 ] // 람
 const MAX_ERROR_COUNT = 5;  // 잘못된 명령어를 입력했을 때, 이스터에그가 발동하기 위한 횟수
 const CHAT_POINT = 1;
